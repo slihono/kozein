@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Smoke test for a built Anix AppImage, run by CI in a clean container (see release.yml › smoke).
+"""Smoke test for a built Kozein AppImage, run by CI in a clean container (see release.yml › smoke).
 
-    smoke-appimage.py <Anix.AppImage> <out-dir> [--webdriver] [--clip <video.mp4>]
+    smoke-appimage.py <Kozein.AppImage> <out-dir> [--webdriver] [--clip <video.mp4>]
 
 Needs an X server on $DISPLAY with a window manager, xdotool, and a D-Bus session.
 Without --webdriver: start, real clicks and keys, stay alive 30 s, quit on SIGTERM, leave nothing behind.
@@ -17,10 +17,10 @@ OUT = os.path.abspath(sys.argv[2])
 WEBDRIVER = "--webdriver" in sys.argv
 CLIP = sys.argv[sys.argv.index("--clip") + 1] if "--clip" in sys.argv else None
 os.makedirs(OUT, exist_ok=True)
-HOME = tempfile.mkdtemp(prefix="anix-smoke-")
+HOME = tempfile.mkdtemp(prefix="kozein-smoke-")
 ENV = {k: v for k, v in os.environ.items() if not k.startswith("XDG_") or k == "XDG_RUNTIME_DIR"}
 ENV.update(HOME=HOME, APPIMAGE_EXTRACT_AND_RUN="1", ANIX_PLAYER_ENGINE="web", NO_AT_BRIDGE="1")
-LOG = os.path.join(HOME, ".local", "share", "anix", "anix.log")
+LOG = os.path.join(HOME, ".local", "share", "kozein", "anix.log")
 res = {"appimage": os.path.basename(APPIMAGE), "webdriver": WEBDRIVER, "failures": []}
 
 
@@ -62,7 +62,7 @@ def log_text():
 
 def window():
     for _ in range(60):
-        ids = sh("xdotool", "search", "--onlyvisible", "--name", "Anix").split()
+        ids = sh("xdotool", "search", "--onlyvisible", "--name", "^Kozein$").split()
         if ids:
             return ids[-1]
         time.sleep(1)
@@ -160,7 +160,7 @@ try:
     win = window()
     res["window"] = bool(win)
     if not win:
-        fail("no Anix window appeared within 60 s")
+        fail("no Kozein window appeared within 60 s")
     else:
         time.sleep(8)
         shot("started.png")

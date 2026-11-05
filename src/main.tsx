@@ -19,7 +19,7 @@ import './theme/lists.css';
 import './theme/fun.css';
 
 // The language remembered from the last run is loaded first, so the first frame is already in it.
-void initI18n().finally(() =>
+void initI18n(desktop ? 'system' : 'fr').finally(() =>
   ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
       <React.Suspense fallback={<p role="status">{t('common.loading')}</p>}>

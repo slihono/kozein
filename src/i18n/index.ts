@@ -152,6 +152,6 @@ export function systemLanguage(): AppLanguage {
 }
 
 /** Before the first render: the language remembered from the last run. */
-export function initI18n(): Promise<void> {
-  return setLanguage(resolveLanguage(rememberedSetting() ?? 'fr', systemLanguages()));
+export function initI18n(defaultLanguage: AppLanguage | 'system' = 'system'): Promise<void> {
+  return setLanguage(resolveLanguage(rememberedSetting() ?? defaultLanguage, systemLanguages()));
 }
