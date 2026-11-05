@@ -77,8 +77,8 @@ pub fn sanitized_command(program: &str) -> Command {
 }
 
 /// Starts `cmd` and waits for it on a thread, so a player or helper the user closes is reaped
-/// instead of staying behind as a zombie process until Anix quits. Returns the process id.
-/// Stdin is closed so a player started from a terminal never reads keys from Anix's terminal
+/// instead of staying behind as a zombie process until Kozein quits. Returns the process id.
+/// Stdin is closed so a player started from a terminal never reads keys from Kozein's terminal
 /// (mpv's --input-terminal); stdout and stderr stay inherited for debugging.
 pub fn spawn_reaped(cmd: &mut Command) -> std::io::Result<u32> {
     let mut child = cmd.stdin(std::process::Stdio::null()).spawn()?;
@@ -123,7 +123,7 @@ pub fn open_external(url: String) -> Result<(), String> {
 /// program that is executed; `builtin` has no external binary, so it falls back to mpv.
 pub fn resolve_player_bin(player: Option<&str>) -> Result<&'static str, String> {
     if crate::system::is_flatpak() {
-        return Err("mpv and VLC cannot be started from the Flatpak yet. Play it in Anix instead.".to_string());
+        return Err("mpv and VLC cannot be started from the Flatpak yet. Play it in Kozein instead.".to_string());
     }
     match player.map(|p| p.to_lowercase()).as_deref() {
         None | Some("") | Some("mpv") | Some("builtin") => Ok("mpv"),

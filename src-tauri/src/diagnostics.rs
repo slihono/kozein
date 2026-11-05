@@ -95,8 +95,8 @@ pub async fn build_report(pool: &SqlitePool) -> String {
         out.push('\n');
     };
 
-    line("Anix diagnostics report".to_string());
-    line(format!("Anix {}", env!("CARGO_PKG_VERSION")));
+    line("Kozein diagnostics report".to_string());
+    line(format!("Kozein {}", env!("CARGO_PKG_VERSION")));
     line(format!("System: {} · kernel {}", os_name(), kernel()));
     line(format!("Desktop: {} · session {}", env("XDG_CURRENT_DESKTOP"), env("XDG_SESSION_TYPE")));
     line(format!(

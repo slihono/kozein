@@ -980,7 +980,7 @@ export const Settings: React.FC = () => {
               {appVersion && <span className="meme-nixie">{nixie(appVersion)}</span>}
             </div>
           )}
-          <Row label="Anix" hint={appVersion ? t('settings.version', { version: appVersion }) : undefined}>
+          <Row label={t('kozein.brand')} hint={appVersion ? t('settings.version', { version: appVersion }) : undefined}>
             {() => (
               <Button variant="secondary" size="sm" onClick={handleCheckUpdate} disabled={isCheckingUpdate}>
                 {isCheckingUpdate && <Spinner size="sm" label={t('settings.checkingUpdates')} />}

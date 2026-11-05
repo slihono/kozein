@@ -93,7 +93,7 @@ fn show_crash_loop_dialog(app: &AppHandle) {
     let handle = app.clone();
     app.dialog()
         .message(crate::i18n::text(lang, "page_crash_loop"))
-        .title("Anix")
+        .title("Kozein")
         .kind(MessageDialogKind::Error)
         .show(move |_| handle.exit(1));
 }

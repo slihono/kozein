@@ -28,7 +28,7 @@ const english = en as Catalog;
 const loaders = import.meta.glob<{ default: Catalog }>(['./locales/*.json', '!./locales/en.json']);
 
 /** Remembers the `app_language` setting so the next start renders in it from the first frame. */
-const STORAGE_KEY = 'anix-app-language';
+const STORAGE_KEY = 'kozein-app-language';
 
 let current: AppLanguage = 'en';
 let catalog: Catalog = english;
@@ -153,5 +153,5 @@ export function systemLanguage(): AppLanguage {
 
 /** Before the first render: the language remembered from the last run. */
 export function initI18n(): Promise<void> {
-  return setLanguage(resolveLanguage(rememberedSetting() ?? 'system', systemLanguages()));
+  return setLanguage(resolveLanguage(rememberedSetting() ?? 'fr', systemLanguages()));
 }

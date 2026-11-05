@@ -31,7 +31,7 @@ pub async fn push_test_notice(state: State<'_, AppState>) -> Result<i64, String>
         &state.pool,
         notices::TEST,
         "Test notification",
-        "Notifications from Anix show up here.",
+        "Notifications from Kozein show up here.",
         Some("/notifications"),
     )
     .await

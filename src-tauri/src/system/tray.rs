@@ -151,7 +151,7 @@ pub fn set_enabled(app: &AppHandle, enabled: bool) {
 fn build(app: &AppHandle) -> tauri::Result<()> {
     let menu = menu(app, &UPCOMING.lock().unwrap_or_else(|p| p.into_inner()))?;
     let mut builder = TrayIconBuilder::with_id(TRAY_ID)
-        .tooltip("Anix")
+        .tooltip("Kozein")
         .menu(&menu)
         .on_menu_event(|app, event| on_menu(app, event.id().as_ref()));
     if let Some(icon) = app.default_window_icon() {

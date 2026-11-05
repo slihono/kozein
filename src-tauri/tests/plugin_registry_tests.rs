@@ -838,7 +838,7 @@ fn drive_index(name: Option<&str>, version: &str, servers: &str) -> serde_json::
 }
 
 async fn drive_fixture() -> DriveFixture {
-    let file = Arc::new(Mutex::new(drive_index(Some("Anix extensions"), "1.0.0", "'a'").to_string()));
+    let file = Arc::new(Mutex::new(drive_index(Some("Kozein extensions"), "1.0.0", "'a'").to_string()));
     let interstitial: Arc<Mutex<Option<String>>> = Arc::new(Mutex::new(None));
     let (contents, page) = (file.clone(), interstitial.clone());
     let drive = Site::start(move |request: &Req| match request.route() {
@@ -927,7 +927,7 @@ async fn a_drive_share_link_is_downloaded_directly_and_kept_as_entered() {
     let link = fx.drive.url(&format!("/file/d/{}/view?usp=sharing", FILE_ID));
     let repo = registry.add_repo(&link).await.unwrap();
     assert_eq!(repo.url, link, "the link the user entered is what is stored");
-    assert_eq!(repo.name, "Anix extensions");
+    assert_eq!(repo.name, "Kozein extensions");
     assert_eq!((repo.plugin_count, repo.error.clone()), (2, None));
     // The share page itself was never asked for.
     assert_eq!(fx.drive.count("/file/d/"), 0, "{:?}", fx.drive.hits());
@@ -973,7 +973,7 @@ async fn a_website_link_that_redirects_to_drive_is_followed_to_the_file() {
     let link = fx.website.url("/hop");
     let repo = registry.add_repo(&link).await.unwrap();
     assert_eq!(repo.url, link);
-    assert_eq!(repo.name, "Anix extensions");
+    assert_eq!(repo.name, "Kozein extensions");
     assert_eq!(repo.plugin_count, 2);
     assert_eq!(fx.website.hits(), ["GET /hop", "GET /plugins"]);
     assert_eq!(
@@ -1087,7 +1087,7 @@ async fn inline_code_that_changes_under_the_same_version_is_installed() {
     assert_eq!(server_list(&registry, "drive-one"), ["a"]);
 
     // The code of one plugin changes; every version number stays the same.
-    fx.set_file(drive_index(Some("Anix extensions"), "1.0.0", "'a', 'b'"));
+    fx.set_file(drive_index(Some("Kozein extensions"), "1.0.0", "'a', 'b'"));
     let refreshed = registry.refresh_repos().await;
     assert_eq!(refreshed[0].error, None);
     let one = registry.list_plugins().into_iter().find(|p| p.id == "drive-one").unwrap();
@@ -1103,7 +1103,7 @@ async fn inline_code_that_changes_under_the_same_version_is_installed() {
         { "id": "drive-three", "name": "Three", "version": "0.1.0", "type": "onlinestream-provider", "payload": drive_plugin("'c'") }
     ] }));
     let refreshed = registry.refresh_repos().await;
-    assert_eq!(refreshed[0].name, "Anix extensions", "a list that stops naming itself keeps its name");
+    assert_eq!(refreshed[0].name, "Kozein extensions", "a list that stops naming itself keeps its name");
     assert_eq!(manager(&registry).provider_names(), ["drive-three"]);
     assert!(!dir.join("payloads/drive-one.js").exists());
 }
@@ -1121,7 +1121,7 @@ async fn a_repository_can_pause_a_plugin_without_a_new_version() {
     assert_eq!(paused(&registry), None);
     assert!(!provider_paused(&registry));
 
-    let mut index = drive_index(Some("Anix extensions"), "1.0.0", "'a'");
+    let mut index = drive_index(Some("Kozein extensions"), "1.0.0", "'a'");
     index["plugins"][0]["paused"] = json!("  The site changed its player  ");
     fx.set_file(index.clone());
     registry.refresh_repos().await;
@@ -1345,7 +1345,7 @@ async fn an_update_that_cannot_be_saved_keeps_the_installed_version() {
 
     // A new version arrives while nothing can be written (a full disk behaves the same way).
     // It also pauses the plugin, which must hold for the installed version too.
-    let mut index = drive_index(Some("Anix extensions"), "1.1.0", "'a', 'b'");
+    let mut index = drive_index(Some("Kozein extensions"), "1.1.0", "'a', 'b'");
     index["plugins"][0]["paused"] = json!("Player changed");
     fx.set_file(index);
     let payloads = dir.join("payloads");
@@ -1365,7 +1365,7 @@ async fn an_update_that_cannot_be_saved_keeps_the_installed_version() {
 
     // The repository lifts the pause with the version that fixes it, which still cannot be saved:
     // the old code keeps its pause.
-    fx.set_file(drive_index(Some("Anix extensions"), "1.1.0", "'a', 'b'"));
+    fx.set_file(drive_index(Some("Kozein extensions"), "1.1.0", "'a', 'b'"));
     std::fs::set_permissions(&payloads, std::fs::Permissions::from_mode(0o555)).unwrap();
     registry.refresh_repos().await;
     std::fs::set_permissions(&payloads, std::fs::Permissions::from_mode(0o755)).unwrap();

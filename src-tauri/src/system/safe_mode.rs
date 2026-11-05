@@ -1,4 +1,4 @@
-//! Safe mode: after two starts in a row that did not exit cleanly, Anix starts with the options
+//! Safe mode: after two starts in a row that did not exit cleanly, Kozein starts with the options
 //! most likely to get it running again instead of crashing in a loop. This start uses the web
 //! player, turns WebKit's compositing off, skips the extension-list refresh and does not reopen
 //! the screen a restart asked for. One clean exit turns it off again.

@@ -1,0 +1,87 @@
+{
+  "controls": [
+    {
+      "height": 53,
+      "label": "Découvrir",
+      "width": 72
+    },
+    {
+      "height": 53,
+      "label": "Ma bibliothèque1",
+      "width": 72
+    },
+    {
+      "height": 53,
+      "label": "Lecture",
+      "width": 72
+    },
+    {
+      "height": 53,
+      "label": "Lecteur vidéo",
+      "width": 72
+    },
+    {
+      "height": 53,
+      "label": "Paramètres",
+      "width": 72
+    }
+  ],
+  "image": [
+    {
+      "left": 176,
+      "right": 208,
+      "width": 32
+    }
+  ],
+  "scrollWidth": 384,
+  "viewport": {
+    "height": 844,
+    "width": 390
+  }
+}
+
+- link "Aller au contenu":
+  - /url: "#kozein-main"
+- complementary:
+  - navigation "Navigation principale":
+    - link "Découvrir":
+      - /url: "#/discover"
+      - generic: Découvrir
+    - link "Ma bibliothèque":
+      - /url: "#/library"
+      - generic: Ma bibliothèque
+    - link "Lecture":
+      - /url: "#/reading"
+      - generic: Lecture
+    - link "Lecteur vidéo":
+      - /url: "#/video"
+      - generic: Lecteur vidéo
+    - link "Paramètres":
+      - /url: "#/settings"
+      - generic: Paramètres
+- banner:
+  - paragraph: Kozein
+  - generic: Données locales
+  - combobox "Langue de l’interface":
+    - option "Français" [selected]
+    - option "English"
+- main:
+  - paragraph: Kozein
+  - heading "volume 1" [level=1]
+  - paragraph: Utilise les flèches pour tourner les pages. Échap revient aux volumes.
+  - button "Retour aux volumes":
+    - text: Retour aux volumes
+  - button "Page précédente":
+  - text: Page
+  - combobox "Page":
+    - option "1"
+    - option "2"
+    - option "3" [selected]
+  - generic: / 3
+  - button "Page suivante" [disabled]:
+  - checkbox "Lecture de droite à gauche" [checked]
+  - text: Lecture de droite à gauche
+  - paragraph: Page 3 sur 3
+  - img "Page 3 sur 3"
+  - generic: Kozein · 1.0.0
+  - generic: Une bibliothèque personnelle, à ton rythme.

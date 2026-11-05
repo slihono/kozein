@@ -174,7 +174,11 @@ pub fn default_download_url(site: &str) -> String {
 
 /// The latest published version, from the app's website.
 pub async fn fetch_latest_release(client: &Client) -> Result<Option<UpdateInfo>, String> {
-    fetch_update_info(client, SITE_URL).await
+    // A derivative must never install Anix releases over its own binary.
+    match option_env!("KOZEIN_SITE_URL").filter(|site| !site.is_empty()) {
+        Some(site) => fetch_update_info(client, site).await,
+        None => Ok(None),
+    }
 }
 
 /// Reads `<site>/version.json`. `Ok(None)` means the site publishes no update information (the
@@ -306,19 +310,19 @@ fn writable(path: &Path) -> bool {
 }
 
 /// The AppImage file the updater may replace: `$APPIMAGE` (`appimage`) names a file that can
-/// be written, in a folder that can be written, and Anix is not running as root (`euid`).
+/// be written, in a folder that can be written, and Kozein is not running as root (`euid`).
 /// Otherwise the reason, and the update dialog offers the download page instead.
 pub fn appimage_target(appimage: Option<&std::ffi::OsStr>, euid: u32) -> Result<PathBuf, String> {
-    let path = PathBuf::from(appimage.filter(|p| !p.is_empty()).ok_or("Anix is not running as an AppImage.")?);
+    let path = PathBuf::from(appimage.filter(|p| !p.is_empty()).ok_or("Kozein is not running as an AppImage.")?);
     if euid == 0 {
-        return Err("Anix is running as root; updates are only installed for a normal user.".to_string());
+        return Err("Kozein is running as root; updates are only installed for a normal user.".to_string());
     }
     let folder = path.parent().filter(|_| path.is_absolute()).ok_or("The AppImage location is not a full path.")?;
     if !path.is_file() {
         return Err(format!("{} is not a file.", path.display()));
     }
     if !writable(&path) || !writable(folder) {
-        return Err(format!("Anix cannot write to {}.", path.display()));
+        return Err(format!("Kozein cannot write to {}.", path.display()));
     }
     Ok(path)
 }
@@ -349,7 +353,7 @@ pub fn install_verified(downloaded: &Path, target: &Path, sha256: &str) -> Resul
     };
     match sha256_file(downloaded) {
         Ok(hash) if hash.eq_ignore_ascii_case(sha256.trim()) => {}
-        Ok(_) => return fail("The downloaded update does not match its checksum, so it was not installed. Anix is unchanged.".to_string()),
+        Ok(_) => return fail("The downloaded update does not match its checksum, so it was not installed. Kozein is unchanged.".to_string()),
         Err(e) => return fail(format!("The downloaded update could not be read: {}", e)),
     }
 
@@ -404,7 +408,7 @@ pub struct RollbackRecord {
 }
 
 /// Size and modification time of `backup`: a backup made later (by an update that then
-/// failed, or by another copy of Anix) no longer matches the record.
+/// failed, or by another copy of Kozein) no longer matches the record.
 pub fn backup_fingerprint(backup: &Path) -> Option<String> {
     use std::os::unix::fs::MetadataExt;
     let meta = std::fs::metadata(backup).ok().filter(|m| m.is_file())?;
@@ -429,7 +433,7 @@ pub fn record_update(app_dir: &Path, from: &str, to: &str, backup: &Path) {
     }
 }
 
-/// The version Anix can go back to: there is a record of the update to `current`, and the
+/// The version Kozein can go back to: there is a record of the update to `current`, and the
 /// backup of `target` it made is still there, unchanged.
 pub fn rollback_available(app_dir: &Path, current: &str, target: &Path) -> Option<RollbackRecord> {
     let record: RollbackRecord = serde_json::from_slice(&std::fs::read(app_dir.join(ROLLBACK_FILE)).ok()?).ok()?;

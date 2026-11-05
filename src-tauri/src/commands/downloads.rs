@@ -102,7 +102,7 @@ pub async fn get_download_directory() -> Result<String, String> {
 }
 
 /// Asks for a new download folder, starting in the current one. Returns the folder, which the
-/// caller saves as `download_dir`, or `None` when the dialog was cancelled. A folder Anix
+/// caller saves as `download_dir`, or `None` when the dialog was cancelled. A folder Kozein
 /// cannot write to is refused with the reason.
 #[tauri::command]
 pub async fn pick_download_directory(app: tauri::AppHandle) -> Result<Option<String>, String> {

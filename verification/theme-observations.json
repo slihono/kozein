@@ -1,0 +1,65 @@
+[
+  {
+    "theme": "dark",
+    "background": "rgb(10, 10, 13)",
+    "foreground": "rgb(255, 255, 255)",
+    "overflow": false,
+    "width": 960
+  },
+  {
+    "theme": "oled",
+    "background": "rgb(0, 0, 0)",
+    "foreground": "rgb(255, 255, 255)",
+    "overflow": false,
+    "width": 960
+  },
+  {
+    "theme": "light",
+    "background": "rgb(245, 245, 249)",
+    "foreground": "rgb(22, 22, 29)",
+    "overflow": false,
+    "width": 960
+  },
+  {
+    "theme": "mocha",
+    "background": "rgb(30, 30, 46)",
+    "foreground": "rgb(205, 214, 244)",
+    "overflow": false,
+    "width": 960
+  },
+  {
+    "theme": "hacker",
+    "background": "rgb(2, 7, 3)",
+    "foreground": "rgb(51, 255, 102)",
+    "overflow": false,
+    "width": 960
+  },
+  {
+    "theme": "dracula",
+    "background": "rgb(40, 42, 54)",
+    "foreground": "rgb(248, 248, 242)",
+    "overflow": false,
+    "width": 960
+  },
+  {
+    "theme": "tokyo-night",
+    "background": "rgb(26, 27, 38)",
+    "foreground": "rgb(192, 202, 245)",
+    "overflow": false,
+    "width": 960
+  },
+  {
+    "theme": "manga",
+    "background": "rgb(255, 255, 255)",
+    "foreground": "rgb(0, 0, 0)",
+    "overflow": false,
+    "width": 960
+  },
+  {
+    "theme": "comic",
+    "background": "rgb(255, 249, 229)",
+    "foreground": "rgb(17, 17, 17)",
+    "overflow": false,
+    "width": 960
+  }
+]

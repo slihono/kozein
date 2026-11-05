@@ -269,16 +269,16 @@ fn test_stale_playlist_files_are_removed() {
 
 #[test]
 fn test_strip_appdir_entries() {
-    let appdir = "/tmp/.mount_Anix";
+    let appdir = "/tmp/.mount_Kozein";
     assert_eq!(
-        strip_appdir_entries("/tmp/.mount_Anix/usr/bin/:/usr/local/bin:/usr/bin", appdir),
+        strip_appdir_entries("/tmp/.mount_Kozein/usr/bin/:/usr/local/bin:/usr/bin", appdir),
         "/usr/local/bin:/usr/bin"
     );
-    assert_eq!(strip_appdir_entries("/tmp/.mount_Anix/usr/lib/:", appdir), "");
+    assert_eq!(strip_appdir_entries("/tmp/.mount_Kozein/usr/lib/:", appdir), "");
     // A sibling directory that only shares the prefix is kept.
     assert_eq!(
-        strip_appdir_entries("/tmp/.mount_Anix2/bin:/tmp/.mount_Anix", appdir),
-        "/tmp/.mount_Anix2/bin"
+        strip_appdir_entries("/tmp/.mount_Kozein2/bin:/tmp/.mount_Kozein", appdir),
+        "/tmp/.mount_Kozein2/bin"
     );
 }
 

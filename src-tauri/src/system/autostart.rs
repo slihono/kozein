@@ -8,11 +8,11 @@ use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
 
-pub const FILE_NAME: &str = "anix.desktop";
+pub const FILE_NAME: &str = "kozein.desktop";
 /// Marks entries this app wrote, so a hand-made file of the same name is never removed.
-const MARKER: &str = "X-Anix-Autostart=true";
+const MARKER: &str = "X-Kozein-Autostart=true";
 
-/// `<config home>/autostart/anix.desktop`.
+/// `<config home>/autostart/kozein.desktop`.
 pub fn entry_path(config_home: &Path) -> PathBuf {
     config_home.join("autostart").join(FILE_NAME)
 }
@@ -58,8 +58,8 @@ pub fn desktop_entry(exec: &Path) -> String {
     format!(
         "[Desktop Entry]\n\
          Type=Application\n\
-         Name=Anix\n\
-         Comment=Starts Anix in the tray when you log in\n\
+         Name=Kozein\n\
+         Comment=Starts Kozein in the tray when you log in\n\
          Exec={} {}\n\
          Icon=anix\n\
          Terminal=false\n\
@@ -90,7 +90,7 @@ pub fn write_ours(path: &Path, wanted: Option<&str>, marker: &str) -> io::Result
             if !ours {
                 return Err(io::Error::new(
                     io::ErrorKind::AlreadyExists,
-                    format!("{} exists and was not made by Anix", path.display()),
+                    format!("{} exists and was not made by Kozein", path.display()),
                 ));
             }
             if let Some(parent) = path.parent() {

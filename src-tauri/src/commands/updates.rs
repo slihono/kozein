@@ -23,12 +23,12 @@ fn for_this_install(mut info: UpdateInfo) -> UpdateInfo {
 pub struct UpdateInstallSupport {
     pub appimage: bool,
     pub reason: Option<String>,
-    /// How Anix was installed: `appimage`, `flatpak` or `package` (DEB, RPM, AUR), so the
+    /// How Kozein was installed: `appimage`, `flatpak` or `package` (DEB, RPM, AUR), so the
     /// dialog can say how to update when Install is not offered.
     pub kind: &'static str,
 }
 
-/// How this copy of Anix was installed.
+/// How this copy of Kozein was installed.
 pub fn install_kind() -> &'static str {
     if crate::system::is_flatpak() {
         "flatpak"
@@ -64,9 +64,9 @@ pub async fn install_update(app: AppHandle, state: State<'_, AppState>) -> Resul
     let latest = fetch_latest_release(&state.client).await?.ok_or("The website lists no release right now.")?;
     let info = update::offered_release(Some(latest.clone()))
         .map(for_this_install)
-        .ok_or_else(|| format!("Anix {} has a known problem, so it is not installed.", latest.version))?;
+        .ok_or_else(|| format!("Kozein {} has a known problem, so it is not installed.", latest.version))?;
     if !info.switch_build && !update::is_newer_version(&info.version, env!("CARGO_PKG_VERSION")) {
-        return Err(format!("Anix {} is already the latest version.", env!("CARGO_PKG_VERSION")));
+        return Err(format!("Kozein {} is already the latest version.", env!("CARGO_PKG_VERSION")));
     }
     let asset = info
         .appimage
@@ -82,7 +82,7 @@ pub async fn install_update(app: AppHandle, state: State<'_, AppState>) -> Resul
     if let Ok(dir) = crate::db::get_app_dir() {
         update::record_update(&dir, env!("CARGO_PKG_VERSION"), &info.version, &backup);
     }
-    tracing::info!("Installed Anix {} into {}", info.version, target.display());
+    tracing::info!("Installed Kozein {} into {}", info.version, target.display());
     Ok(target.to_string_lossy().into_owned())
 }
 
@@ -103,7 +103,7 @@ pub fn restart_after_update(app: AppHandle) -> Result<(), String> {
     Ok(())
 }
 
-/// The version Anix can go back to after an update, when its backup is still there.
+/// The version Kozein can go back to after an update, when its backup is still there.
 #[derive(Debug, Clone, Serialize)]
 pub struct RollbackInfo {
     pub version: String,
@@ -123,7 +123,7 @@ pub fn rollback_update() -> Result<String, String> {
     let dir = crate::db::get_app_dir().map_err(|e| e.to_string())?;
     let target = running_appimage()?;
     let record = update::roll_back(&dir, env!("CARGO_PKG_VERSION"), &target)?;
-    tracing::warn!("Went back from Anix {} to {}", record.to, record.from);
+    tracing::warn!("Went back from Kozein {} to {}", record.to, record.from);
     Ok(record.from)
 }
 
@@ -140,7 +140,7 @@ pub fn check_version_at_start(app: &AppHandle) {
     tauri::async_runtime::spawn(async move {
         match fetch_latest_release(&client).await {
             Ok(Some(info)) if update::is_bad_version(&info, env!("CARGO_PKG_VERSION")) => {
-                tracing::warn!("Anix {} is listed as a version with a known problem", env!("CARGO_PKG_VERSION"));
+                tracing::warn!("Kozein {} is listed as a version with a known problem", env!("CARGO_PKG_VERSION"));
                 let first = crate::db::get_app_dir().is_ok_and(|dir| update::first_bad_version_warning(&dir, env!("CARGO_PKG_VERSION")));
                 if first {
                     // Only point at Settings › System when the Go back row is there.

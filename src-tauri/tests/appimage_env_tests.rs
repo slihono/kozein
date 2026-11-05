@@ -1,4 +1,4 @@
-//! Programs Anix starts on the host (the browser for sign-in and links, mpv, VLC, ffmpeg) must
+//! Programs Kozein starts on the host (the browser for sign-in and links, mpv, VLC, ffmpeg) must
 //! not inherit the paths the AppImage launcher points at its bundle. Kept in its own file:
 //! it changes this test process's environment.
 

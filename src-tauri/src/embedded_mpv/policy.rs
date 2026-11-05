@@ -25,7 +25,7 @@ pub struct EngineState {
     pub selftest: Option<SelfTest>,
     /// Playback saw a black picture with full interop: run the self-test again.
     pub selftest_recheck: bool,
-    /// Anix itself moved from the web player to embedded mpv after the web engine crashed;
+    /// Kozein itself moved from the web player to embedded mpv after the web engine crashed;
     /// it does that only once, so a failing mpv that falls back to web cannot loop.
     pub auto_switched: bool,
 }
@@ -37,15 +37,15 @@ pub enum Start {
 }
 
 pub const UNCONFIRMED_REASON: &str =
-    "The last start with embedded mpv was not confirmed, so Anix went back to the web player.";
+    "The last start with embedded mpv was not confirmed, so Kozein went back to the web player.";
 pub const DECLINED_REASON: &str = "You chose to switch back to the web player.";
 pub const NO_ANSWER_REASON: &str =
-    "Nobody confirmed that the video player was showing correctly, so Anix went back to the web player.";
+    "Nobody confirmed that the video player was showing correctly, so Kozein went back to the web player.";
 
 /// Why this run must use the web engine whatever the setting says, if it must.
 pub fn forced_web(args: &[String], env_engine: Option<&str>) -> Option<String> {
     if args.iter().any(|a| a == "--web-player") {
-        Some("Anix was started with --web-player.".to_string())
+        Some("Kozein was started with --web-player.".to_string())
     } else if env_engine.is_some_and(|v| v.trim().eq_ignore_ascii_case("web")) {
         Some("ANIX_PLAYER_ENGINE=web is set.".to_string())
     } else {
@@ -124,7 +124,7 @@ pub fn switch_to_mpv_after_crash(
     engine_setting == "web" && web_playback && !forced_web && mpv_available && !state.auto_switched
 }
 
-/// Whether the web playback marker found at startup was left by an Anix that is gone (so the
+/// Whether the web playback marker found at startup was left by an Kozein that is gone (so the
 /// web player was playing when it died). The marker holds its owner's pid; while that process
 /// still runs, this start is a second launch handing over to it. An empty or garbled marker
 /// has no living owner. `own_pid` cannot be the owner: this start wrote no marker yet.

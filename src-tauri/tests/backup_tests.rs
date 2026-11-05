@@ -247,11 +247,11 @@ async fn backup_refuses_newer_formats_and_other_files() {
     let mut newer = serde_json::to_value(&made).unwrap();
     newer["version"] = json!(backup::VERSION + 1);
     let error = backup::from_bytes(newer.to_string().as_bytes()).unwrap_err().to_string();
-    assert!(error.contains("newer version of Anix"), "{}", error);
+    assert!(error.contains("newer version of Kozein"), "{}", error);
 
     for not_backup in [&b"{\"format\":\"other\",\"version\":1}"[..], b"not json", b""] {
         let error = backup::from_bytes(not_backup).unwrap_err().to_string();
-        assert!(error.contains("not an Anix backup"), "{}", error);
+        assert!(error.contains("not an Kozein backup"), "{}", error);
     }
 
     // Tokens written in plain settings by hand are never restored.

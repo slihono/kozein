@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Search, Home, Compass, Bookmark, Calendar, Settings as SettingsIcon, X, Palette, Puzzle, UserRound, Globe, History } from 'lucide-react';
+import { ArrowRight, Search, Home, Compass, Bookmark, Calendar, Settings as SettingsIcon, X, Palette, Puzzle, UserRound, Globe, History, BookOpen } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import clsx from 'clsx';
 import { useSearchAnime } from '../hooks/useAniList';
@@ -31,6 +31,7 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
+  { id: 'nav-reading', title: 'reading.title', subtitle: 'commandPalette.navReadingHint', path: '/reading', icon: BookOpen },
   { id: 'nav-home', title: 'commandPalette.navHome', subtitle: 'commandPalette.navHomeHint', path: '/', icon: Home },
   { id: 'nav-discover', title: 'commandPalette.navDiscover', subtitle: 'commandPalette.navDiscoverHint', path: '/discover', icon: Compass },
   { id: 'nav-schedule', title: 'commandPalette.navSchedule', subtitle: 'commandPalette.navScheduleHint', path: '/schedule', icon: Calendar },

@@ -126,7 +126,7 @@ export const TitleBar: React.FC = () => {
           nameOnRight ? 'ml-auto' : left.length > 0 ? 'ml-3 mr-auto' : 'mr-auto'
         )}
       >
-        Anix
+        {t('kozein.brand')}
       </span>
       <ButtonGroup buttons={right} />
     </header>

@@ -18,7 +18,7 @@ pub fn peek(dir: &Path) -> u32 {
             // A marker from before the count was kept (pid only) counts as one.
             let count = parts.next().and_then(|n| n.parse::<u32>().ok()).unwrap_or(0);
             let written_in = parts.collect::<Vec<_>>().join(" ");
-            // Logging out or shutting down can end Anix before its exit steps (GTK quits when
+            // Logging out or shutting down can end Kozein before its exit steps (GTK quits when
             // the display goes): a marker from another boot or login session is no crash.
             if !written_in.is_empty() && written_in != origin() {
                 return 0;
@@ -31,8 +31,8 @@ pub fn peek(dir: &Path) -> u32 {
 }
 
 /// Writes the marker for this session. Returns [`peek`]: how many sessions in a row did not
-/// exit cleanly before this one. A second launch, which hands over to the running Anix and
-/// exits, leaves that Anix's marker alone.
+/// exit cleanly before this one. A second launch, which hands over to the running Kozein and
+/// exits, leaves that Kozein's marker alone.
 pub fn begin(dir: &Path) -> u32 {
     let unclean = peek(dir);
     if owner_running(dir) {
@@ -76,7 +76,7 @@ fn write(dir: &Path, pid: u32, unclean: u32) {
     }
 }
 
-/// Whether the marker's pid is another Anix that still runs.
+/// Whether the marker's pid is another Kozein that still runs.
 fn owner_running(dir: &Path) -> bool {
     let Ok(text) = std::fs::read_to_string(dir.join(FILE_NAME)) else { return false };
     let pid = text.split_whitespace().next().unwrap_or("");

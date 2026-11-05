@@ -42,6 +42,7 @@ const Settings = React.lazy(() => import('./screens/Settings').then((m) => ({ de
 const Notifications = React.lazy(() =>
   import('./screens/Notifications').then((m) => ({ default: m.Notifications })),
 );
+const Reading = React.lazy(() => import('./screens/Reading').then((m) => ({ default: m.Reading })));
 const Downloads = React.lazy(() => import('./screens/Downloads').then((m) => ({ default: m.Downloads })));
 const BulkDownloadDialog = React.lazy(() =>
   import('./components/BulkDownloadDialog').then((m) => ({ default: m.BulkDownloadDialog })),
@@ -306,6 +307,7 @@ export const router = createHashRouter([
       { path: 'detail/:id', element: <Detail /> },
       { path: 'watch/:id/:episodeNum', element: <WatchRoute /> },
       { path: 'library', element: <Library /> },
+      { path: 'reading', element: <Reading /> },
       { path: 'schedule', element: <Schedule /> },
       { path: 'settings', element: <Settings /> },
       { path: 'notifications', element: <Notifications /> },

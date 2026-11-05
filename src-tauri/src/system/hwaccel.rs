@@ -18,17 +18,17 @@ pub fn note_dmabuf_workaround(set_by_app: bool) {
 }
 
 const DMABUF_VAR: &str = "WEBKIT_DISABLE_DMABUF_RENDERER";
-/// Set next to `WEBKIT_DISABLE_DMABUF_RENDERER=1` when Anix set that itself. A restart inherits
-/// the environment, and without the mark the new run took Anix's value for the user's and so
+/// Set next to `WEBKIT_DISABLE_DMABUF_RENDERER=1` when Kozein set that itself. A restart inherits
+/// the environment, and without the mark the new run took Kozein's value for the user's and so
 /// refused embedded mpv after "Restart now".
 const DMABUF_MARK: &str = "ANIX_DMABUF_SET_BY_APP";
 
 /// What `main` does with `WEBKIT_DISABLE_DMABUF_RENDERER` before WebKit starts.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DmabufEnv {
-    /// Turn the renderer off (it leaves the window blank on some drivers) and mark it as Anix's.
+    /// Turn the renderer off (it leaves the window blank on some drivers) and mark it as Kozein's.
     Disable,
-    /// An earlier run of Anix turned it off and this run uses mpv, which needs it: remove both.
+    /// An earlier run of Kozein turned it off and this run uses mpv, which needs it: remove both.
     Clear,
     /// Unset, and embedded mpv needs the renderer on.
     Untouched,
@@ -400,11 +400,11 @@ pub fn tips(report: &HardwareReport) -> Vec<String> {
         tips.push("No GPU render device (/dev/dri/renderD*) is visible, so video is decoded in software. Inside a sandbox or container, give it access to /dev/dri.".to_string());
     }
     if !report.vaapi.vainfo_installed {
-        tips.push("Install vainfo to let Anix check VA-API (Fedora/Arch: libva-utils, Debian/Ubuntu: vainfo), then run the check again.".to_string());
+        tips.push("Install vainfo to let Kozein check VA-API (Fedora/Arch: libva-utils, Debian/Ubuntu: vainfo), then run the check again.".to_string());
     } else if report.vaapi.info.is_none() {
         tips.push(format!("VA-API is not working: no driver could be loaded. {}", driver_tip));
         if report.libva_driver_name.is_some() {
-            tips.push("LIBVA_DRIVER_NAME is set in your environment; a wrong value stops VA-API from loading the right driver. Try starting Anix without it.".to_string());
+            tips.push("LIBVA_DRIVER_NAME is set in your environment; a wrong value stops VA-API from loading the right driver. Try starting Kozein without it.".to_string());
         }
     } else if let Some(info) = &report.vaapi.info {
         if info.decode.is_empty() {
@@ -418,7 +418,7 @@ pub fn tips(report: &HardwareReport) -> Vec<String> {
     }
     if report.gstreamer.va.is_none() && report.gstreamer.vaapi.is_none() {
         if report.running_from_appimage {
-            tips.push("The GStreamer plugins Anix uses come with the AppImage, and they have no VA-API decoder, so the built-in player decodes in software. For hardware decoding use an external player such as mpv (Settings › Player).".to_string());
+            tips.push("The GStreamer plugins Kozein uses come with the AppImage, and they have no VA-API decoder, so the built-in player decodes in software. For hardware decoding use an external player such as mpv (Settings › Player).".to_string());
         } else {
             tips.push("GStreamer's VA plugin is missing, so the built-in player decodes in software. Install gstreamer1-plugins-bad-free (Fedora), gstreamer1.0-plugins-bad (Debian/Ubuntu) or gst-plugins-bad (Arch).".to_string());
         }
@@ -428,7 +428,7 @@ pub fn tips(report: &HardwareReport) -> Vec<String> {
     }
     if report.dmabuf_disabled {
         tips.push(if report.dmabuf_set_by_app {
-            "WebKit's DMA-BUF renderer is off: Anix turns it off because it leaves the window blank on some drivers. Video plays either way; the page may draw a little slower. To try it on, start Anix with WEBKIT_DISABLE_DMABUF_RENDERER=0.".to_string()
+            "WebKit's DMA-BUF renderer is off: Kozein turns it off because it leaves the window blank on some drivers. Video plays either way; the page may draw a little slower. To try it on, start Kozein with WEBKIT_DISABLE_DMABUF_RENDERER=0.".to_string()
         } else {
             "WebKit's DMA-BUF renderer was turned off by your environment (WEBKIT_DISABLE_DMABUF_RENDERER).".to_string()
         });

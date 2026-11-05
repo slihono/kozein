@@ -54,7 +54,7 @@ impl Home {
 
     /// Everything an Anilili install leaves behind.
     fn with_old_install(self) -> Self {
-        let data = self.data().join("anilili");
+        let data = self.data().join("kozein-legacy");
         write(&data.join("anilili.db"), "database");
         write(&data.join("anilili.db-wal"), "write-ahead log");
         write(&data.join("anilili.db-shm"), "shared memory");
@@ -62,8 +62,8 @@ impl Home {
         write(&data.join("downloads/Show/Show - EP 01.mp4"), "video");
         write(&data.join("plugins/state.json"), "{}");
         write(&data.join("plugins/payloads/site.js"), "class Provider {}");
-        write(&self.config().join("anilili/settings.json"), r#"{"autoplay":true}"#);
-        write(&self.cache().join("anilili/notification-covers/1.jpg"), "cover");
+        write(&self.config().join("kozein-legacy/settings.json"), r#"{"autoplay":true}"#);
+        write(&self.cache().join("kozein-legacy/notification-covers/1.jpg"), "cover");
         let webview = self.data().join(LEGACY_IDENTIFIER);
         write(&webview.join("site-sessions/cookies"), "site cookies");
         write(&webview.join("site-sessions.json"), "[]");
@@ -92,10 +92,28 @@ fn read(path: &Path) -> String {
 fn the_identifier_is_the_one_tauri_is_configured_with() {
     let config: serde_json::Value = serde_json::from_str(include_str!("../tauri.conf.json")).unwrap();
     assert_eq!(config["identifier"], IDENTIFIER);
-    assert_eq!(config["productName"], "Anix");
+    assert_eq!(config["productName"], "Kozein");
     assert_eq!(config["version"], env!("CARGO_PKG_VERSION"));
     let schemes = config["plugins"]["deep-link"]["desktop"]["schemes"].as_array().unwrap();
     assert!(schemes.contains(&"anix".into()) && schemes.contains(&"anilili".into()));
+    assert!(schemes.contains(&"kozein".into()));
+}
+
+#[test]
+fn kozein_does_not_take_over_original_anix_or_anilili_profiles() {
+    let home = Home::new("independent-profiles");
+    let upstream_database = home.data().join("anix/anix.db");
+    let upstream_settings = home.config().join("anilili/settings.json");
+    write(&upstream_database, "upstream database");
+    write(&upstream_settings, "upstream settings");
+    migrate(&home.bases());
+    assert_eq!(read(&upstream_database), "upstream database");
+    assert_eq!(read(&upstream_settings), "upstream settings");
+    assert_eq!(
+        db::choose_app_dir(Some(home.data()), None, &[db::DB_FILE_NAME]),
+        Some(home.data().join("kozein"))
+    );
+    assert!(!home.data().join("kozein").exists());
 }
 
 #[test]
@@ -116,12 +134,12 @@ fn an_earlier_install_is_moved_to_the_current_names() {
     let home = Home::new("old-only").with_old_install();
     let report = migrate(&home.bases());
     assert!(report.failures().is_empty(), "{:?}", report);
-    assert_eq!(report.outcome_for(&home.data().join("anilili")), Some(&Outcome::Moved));
-    assert_eq!(report.outcome_for(&home.config().join("anilili")), Some(&Outcome::Moved));
-    assert_eq!(report.outcome_for(&home.cache().join("anilili")), Some(&Outcome::Moved));
+    assert_eq!(report.outcome_for(&home.data().join("kozein-legacy")), Some(&Outcome::Moved));
+    assert_eq!(report.outcome_for(&home.config().join("kozein-legacy")), Some(&Outcome::Moved));
+    assert_eq!(report.outcome_for(&home.cache().join("kozein-legacy")), Some(&Outcome::Moved));
     assert_eq!(report.outcome_for(&home.data().join(LEGACY_IDENTIFIER)), Some(&Outcome::Moved));
 
-    let data = home.data().join("anix");
+    let data = home.data().join("kozein");
     assert_eq!(read(&data.join("anix.db")), "database");
     assert_eq!(read(&data.join("anix.db-wal")), "write-ahead log");
     assert_eq!(read(&data.join("anix.db-shm")), "shared memory");
@@ -129,14 +147,14 @@ fn an_earlier_install_is_moved_to_the_current_names() {
     assert!(!data.join("anilili.db").exists() && !data.join("anilili.db-wal").exists() && !data.join("anilili.log").exists());
     assert_eq!(read(&data.join("downloads/Show/Show - EP 01.mp4")), "video");
     assert_eq!(read(&data.join("plugins/payloads/site.js")), "class Provider {}");
-    assert_eq!(read(&home.config().join("anix/settings.json")), r#"{"autoplay":true}"#);
-    assert_eq!(read(&home.cache().join("anix/notification-covers/1.jpg")), "cover");
+    assert_eq!(read(&home.config().join("kozein/settings.json")), r#"{"autoplay":true}"#);
+    assert_eq!(read(&home.cache().join("kozein/notification-covers/1.jpg")), "cover");
     let webview = home.data().join(IDENTIFIER);
     assert_eq!(read(&webview.join("site-sessions/cookies")), "site cookies");
     assert_eq!(read(&webview.join("site-sessions.json")), "[]");
     assert_eq!(read(&webview.join("localstorage/tauri_localhost_0.localstorage")), "player settings");
 
-    for gone in [home.data().join("anilili"), home.config().join("anilili"), home.cache().join("anilili"), home.data().join(LEGACY_IDENTIFIER)] {
+    for gone in [home.data().join("kozein-legacy"), home.config().join("kozein-legacy"), home.cache().join("kozein-legacy"), home.data().join(LEGACY_IDENTIFIER)] {
         assert!(!gone.exists(), "{} is still there", gone.display());
     }
     assert_eq!(db::database_path(&data), data.join("anix.db"));
@@ -148,36 +166,36 @@ fn an_earlier_install_is_moved_to_the_current_names() {
 #[test]
 fn existing_current_data_is_never_replaced() {
     let home = Home::new("both").with_old_install();
-    write(&home.data().join("anix/anix.db"), "new database");
-    write(&home.config().join("anix/settings.json"), "new settings");
+    write(&home.data().join("kozein/anix.db"), "new database");
+    write(&home.config().join("kozein/settings.json"), "new settings");
     write(&home.data().join(IDENTIFIER).join("site-sessions.json"), "new sessions");
 
     let report = migrate(&home.bases());
     assert!(report.failures().is_empty(), "{:?}", report);
-    assert_eq!(report.outcome_for(&home.data().join("anilili")), Some(&Outcome::KeptExisting));
-    assert_eq!(report.outcome_for(&home.config().join("anilili")), Some(&Outcome::KeptExisting));
+    assert_eq!(report.outcome_for(&home.data().join("kozein-legacy")), Some(&Outcome::KeptExisting));
+    assert_eq!(report.outcome_for(&home.config().join("kozein-legacy")), Some(&Outcome::KeptExisting));
     assert_eq!(report.outcome_for(&home.data().join(LEGACY_IDENTIFIER)), Some(&Outcome::KeptExisting));
     // The cache folder had no current counterpart, so that one does move.
-    assert_eq!(report.outcome_for(&home.cache().join("anilili")), Some(&Outcome::Moved));
+    assert_eq!(report.outcome_for(&home.cache().join("kozein-legacy")), Some(&Outcome::Moved));
 
-    assert_eq!(read(&home.data().join("anix/anix.db")), "new database");
-    assert_eq!(fs::read_dir(home.data().join("anix")).unwrap().count(), 1, "nothing was merged in");
-    assert_eq!(read(&home.config().join("anix/settings.json")), "new settings");
+    assert_eq!(read(&home.data().join("kozein/anix.db")), "new database");
+    assert_eq!(fs::read_dir(home.data().join("kozein")).unwrap().count(), 1, "nothing was merged in");
+    assert_eq!(read(&home.config().join("kozein/settings.json")), "new settings");
     assert_eq!(read(&home.data().join(IDENTIFIER).join("site-sessions.json")), "new sessions");
     // The earlier install is left exactly as it was.
-    assert_eq!(read(&home.data().join("anilili/anilili.db")), "database");
-    assert_eq!(read(&home.config().join("anilili/settings.json")), r#"{"autoplay":true}"#);
+    assert_eq!(read(&home.data().join("kozein-legacy/anilili.db")), "database");
+    assert_eq!(read(&home.config().join("kozein-legacy/settings.json")), r#"{"autoplay":true}"#);
     assert_eq!(read(&home.data().join(LEGACY_IDENTIFIER).join("site-sessions/cookies")), "site cookies");
 }
 
 #[test]
 fn an_empty_current_folder_does_not_block_the_move() {
     let home = Home::new("empty-new").with_old_install();
-    fs::create_dir_all(home.data().join("anix")).unwrap();
+    fs::create_dir_all(home.data().join("kozein")).unwrap();
     fs::create_dir_all(home.data().join(IDENTIFIER)).unwrap();
     let report = migrate(&home.bases());
     assert!(report.failures().is_empty(), "{:?}", report);
-    assert_eq!(read(&home.data().join("anix/anix.db")), "database");
+    assert_eq!(read(&home.data().join("kozein/anix.db")), "database");
     assert_eq!(read(&home.data().join(IDENTIFIER).join("site-sessions.json")), "[]");
 }
 
@@ -185,42 +203,42 @@ fn an_empty_current_folder_does_not_block_the_move() {
 fn partial_earlier_data_is_moved_piece_by_piece() {
     // Only settings: the app was started once and closed before it had a database.
     let home = Home::new("partial-config");
-    write(&home.config().join("anilili/settings.json"), "{}");
+    write(&home.config().join("kozein-legacy/settings.json"), "{}");
     let report = migrate(&home.bases());
     assert_eq!(report.steps.len(), 1, "{:?}", report);
-    assert_eq!(read(&home.config().join("anix/settings.json")), "{}");
-    assert!(!home.data().join("anix").exists() && !home.data().join(IDENTIFIER).exists());
+    assert_eq!(read(&home.config().join("kozein/settings.json")), "{}");
+    assert!(!home.data().join("kozein").exists() && !home.data().join(IDENTIFIER).exists());
 
     // A data folder with downloads and a log but no database, and a database without companions.
     let home = Home::new("partial-data");
-    write(&home.data().join("anilili/downloads/a.mp4"), "video");
-    write(&home.data().join("anilili/anilili.log"), "log");
+    write(&home.data().join("kozein-legacy/downloads/a.mp4"), "video");
+    write(&home.data().join("kozein-legacy/anilili.log"), "log");
     let report = migrate(&home.bases());
     assert!(report.failures().is_empty(), "{:?}", report);
-    assert_eq!(read(&home.data().join("anix/downloads/a.mp4")), "video");
-    assert_eq!(read(&home.data().join("anix/anix.log")), "log");
-    assert!(!home.data().join("anix/anix.db").exists());
+    assert_eq!(read(&home.data().join("kozein/downloads/a.mp4")), "video");
+    assert_eq!(read(&home.data().join("kozein/anix.log")), "log");
+    assert!(!home.data().join("kozein/anix.db").exists());
 
     let home = Home::new("partial-db");
-    write(&home.data().join("anilili/anilili.db"), "database");
+    write(&home.data().join("kozein-legacy/anilili.db"), "database");
     assert!(migrate(&home.bases()).failures().is_empty());
-    assert_eq!(read(&home.data().join("anix/anix.db")), "database");
-    assert!(!home.data().join("anix/anix.db-wal").exists());
+    assert_eq!(read(&home.data().join("kozein/anix.db")), "database");
+    assert!(!home.data().join("kozein/anix.db-wal").exists());
 
     // A move that stopped half way (folder moved, database not yet renamed) is finished.
     let home = Home::new("partial-rename");
-    write(&home.data().join("anix/anilili.db"), "database");
-    write(&home.data().join("anix/anilili.db-wal"), "wal");
-    assert_eq!(db::database_path(&home.data().join("anix")), home.data().join("anix/anilili.db"));
+    write(&home.data().join("kozein/anilili.db"), "database");
+    write(&home.data().join("kozein/anilili.db-wal"), "wal");
+    assert_eq!(db::database_path(&home.data().join("kozein")), home.data().join("kozein/anilili.db"));
     assert!(migrate(&home.bases()).failures().is_empty());
-    assert_eq!(read(&home.data().join("anix/anix.db")), "database");
-    assert_eq!(read(&home.data().join("anix/anix.db-wal")), "wal");
+    assert_eq!(read(&home.data().join("kozein/anix.db")), "database");
+    assert_eq!(read(&home.data().join("kozein/anix.db-wal")), "wal");
 
     // A file that happens to carry the earlier folder name is not a folder to move.
     let home = Home::new("partial-file");
-    write(&home.data().join("anilili"), "not a directory");
+    write(&home.data().join("kozein-legacy"), "not a directory");
     assert!(migrate(&home.bases()).is_empty());
-    assert!(home.data().join("anilili").is_file());
+    assert!(home.data().join("kozein-legacy").is_file());
 }
 
 #[test]
@@ -232,7 +250,7 @@ fn a_data_folder_outside_the_xdg_directory_is_moved_where_it_is() {
     let bases = BaseDirs { data: Some(elsewhere.clone()), ..home.bases() };
     let report = migrate(&bases);
     assert!(report.failures().is_empty(), "{:?}", report);
-    assert_eq!(read(&home.data().join("anix/anix.db")), "database");
+    assert_eq!(read(&home.data().join("kozein/anix.db")), "database");
     assert!(fs::read_dir(&elsewhere).unwrap().next().is_none());
 }
 
@@ -252,31 +270,31 @@ fn a_target_that_cannot_be_written_leaves_everything_in_place() {
     fs::set_permissions(home.data(), open.clone()).unwrap();
     fs::set_permissions(home.config(), open).unwrap();
 
-    for stuck in [home.data().join("anilili"), home.config().join("anilili"), home.data().join(LEGACY_IDENTIFIER)] {
+    for stuck in [home.data().join("kozein-legacy"), home.config().join("kozein-legacy"), home.data().join(LEGACY_IDENTIFIER)] {
         assert!(matches!(report.outcome_for(&stuck), Some(Outcome::Failed(_))), "{:?}", report);
     }
     assert_eq!(report.failures().len(), 3);
     // What could be moved was; the rest is untouched and nothing half-made is left behind.
-    assert_eq!(report.outcome_for(&home.cache().join("anilili")), Some(&Outcome::Moved));
-    assert_eq!(read(&home.data().join("anilili/anilili.db")), "database");
-    assert_eq!(read(&home.data().join("anilili/anilili.db-wal")), "write-ahead log");
-    assert_eq!(read(&home.config().join("anilili/settings.json")), r#"{"autoplay":true}"#);
+    assert_eq!(report.outcome_for(&home.cache().join("kozein-legacy")), Some(&Outcome::Moved));
+    assert_eq!(read(&home.data().join("kozein-legacy/anilili.db")), "database");
+    assert_eq!(read(&home.data().join("kozein-legacy/anilili.db-wal")), "write-ahead log");
+    assert_eq!(read(&home.config().join("kozein-legacy/settings.json")), r#"{"autoplay":true}"#);
     let names: Vec<String> = fs::read_dir(home.data()).unwrap().map(|e| e.unwrap().file_name().to_string_lossy().into_owned()).collect();
     assert_eq!(names.len(), 2, "{:?}", names);
     report.log();
     // The app keeps working on the folders it could not move instead of starting empty.
     let data_dir = db::choose_app_dir(Some(home.data()), Some(home.data()), &[db::DB_FILE_NAME, db::LEGACY_DB_FILE_NAME]);
-    assert_eq!(data_dir, Some(home.data().join("anilili")));
-    assert_eq!(db::database_path(&data_dir.unwrap()), home.data().join("anilili/anilili.db"));
+    assert_eq!(data_dir, Some(home.data().join("kozein-legacy")));
+    assert_eq!(db::database_path(&data_dir.unwrap()), home.data().join("kozein-legacy/anilili.db"));
     let config_dir = db::choose_app_dir(Some(home.config()), None, &["settings.json"]);
-    assert_eq!(config_dir, Some(home.config().join("anilili")));
+    assert_eq!(config_dir, Some(home.config().join("kozein-legacy")));
 
     // Once the directory is writable the next start completes the move.
     let report = migrate(&home.bases());
     assert!(report.failures().is_empty(), "{:?}", report);
-    assert_eq!(read(&home.data().join("anix/anix.db")), "database");
+    assert_eq!(read(&home.data().join("kozein/anix.db")), "database");
     let data_dir = db::choose_app_dir(Some(home.data()), Some(home.data()), &[db::DB_FILE_NAME, db::LEGACY_DB_FILE_NAME]);
-    assert_eq!(data_dir, Some(home.data().join("anix")));
+    assert_eq!(data_dir, Some(home.data().join("kozein")));
 }
 
 #[test]
@@ -286,17 +304,17 @@ fn the_app_folder_is_the_one_that_holds_the_data() {
     let markers = [db::DB_FILE_NAME, db::LEGACY_DB_FILE_NAME];
     let choose = || db::choose_app_dir(Some(elsewhere.clone()), Some(home.data()), &markers);
     // Nothing anywhere: the current name in the proper directory.
-    assert_eq!(choose(), Some(elsewhere.join("anix")));
-    assert_eq!(db::choose_app_dir(None, Some(home.data()), &markers), Some(home.data().join("anix")));
+    assert_eq!(choose(), Some(elsewhere.join("kozein")));
+    assert_eq!(db::choose_app_dir(None, Some(home.data()), &markers), Some(home.data().join("kozein")));
     assert_eq!(db::choose_app_dir(None, None, &markers), None);
     // An install that lives in ~/.local/share is kept there.
-    write(&home.data().join("anilili/anilili.db"), "old");
-    assert_eq!(choose(), Some(home.data().join("anilili")));
-    write(&home.data().join("anix/anix.db"), "new");
-    assert_eq!(choose(), Some(home.data().join("anix")));
+    write(&home.data().join("kozein-legacy/anilili.db"), "old");
+    assert_eq!(choose(), Some(home.data().join("kozein-legacy")));
+    write(&home.data().join("kozein/anix.db"), "new");
+    assert_eq!(choose(), Some(home.data().join("kozein")));
     // The proper directory wins once it holds a database.
-    write(&elsewhere.join("anix/anix.db"), "newest");
-    assert_eq!(choose(), Some(elsewhere.join("anix")));
+    write(&elsewhere.join("kozein/anix.db"), "newest");
+    assert_eq!(choose(), Some(elsewhere.join("kozein")));
 }
 
 #[test]
@@ -305,7 +323,7 @@ fn a_database_that_cannot_be_renamed_keeps_its_companions_and_is_still_opened() 
         return;
     }
     let home = Home::new("locked-db");
-    let dir = home.data().join("anix");
+    let dir = home.data().join("kozein");
     write(&dir.join("anilili.db"), "database");
     write(&dir.join("anilili.db-wal"), "wal");
     fs::set_permissions(&dir, fs::Permissions::from_mode(0o555)).unwrap();
@@ -331,7 +349,7 @@ fn copying_stands_in_when_renaming_is_not_possible() {
     assert!(names.iter().all(|name| !name.contains("migrating")), "{:?}", names);
 
     // It refuses a target that holds something.
-    let from = home.data().join("anilili");
+    let from = home.data().join("kozein-legacy");
     let err = copy_then_remove(&from, &to).unwrap_err();
     assert_eq!(err.kind(), std::io::ErrorKind::AlreadyExists);
     assert_eq!(read(&from.join("anilili.db")), "database");
@@ -340,7 +358,7 @@ fn copying_stands_in_when_renaming_is_not_possible() {
 #[tokio::test]
 async fn a_real_database_keeps_its_history_and_downloads_across_the_move() {
     let home = Home::new("real-db");
-    let old_dir = home.data().join("anilili");
+    let old_dir = home.data().join("kozein-legacy");
     fs::create_dir_all(&old_dir).unwrap();
     let old_file = old_dir.join("downloads/Show/Show - EP 01.mp4");
     let outside = home.0.join("Videos/Show - EP 02.mp4");
@@ -368,7 +386,7 @@ async fn a_real_database_keeps_its_history_and_downloads_across_the_move() {
     let bases = home.bases();
     let report = migrate(&bases);
     assert!(report.failures().is_empty(), "{:?}", report);
-    let new_dir = home.data().join("anix");
+    let new_dir = home.data().join("kozein");
     let pool = db::init_db_at(&db::database_path(&new_dir)).await.unwrap();
 
     assert_eq!(repoint_download_paths(&pool, &bases).await.unwrap(), 1);

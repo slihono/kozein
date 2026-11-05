@@ -61,7 +61,7 @@ pub fn socket_path(nonce: u128) -> PathBuf {
     socket_dir().join(format!("{}{}.sock", SOCKET_PREFIX, nonce))
 }
 
-/// Removes the sockets an mpv left behind when Anix closed before it (a crash, a kill).
+/// Removes the sockets an mpv left behind when Kozein closed before it (a crash, a kill).
 /// A socket that still answers belongs to a running mpv and stays, and so does any file of
 /// another user (the temp-directory fallback is shared). Returns how many were removed.
 pub fn remove_stale_sockets(dir: &Path) -> usize {

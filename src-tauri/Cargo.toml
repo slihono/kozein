@@ -1,8 +1,8 @@
 [package]
 name = "anix"
-version = "1.4.0"
-description = "Anix - anime catalogue, tracker, library and player for Linux"
-authors = ["Anix"]
+version = "1.0.0"
+description = "Kozein - anime catalogue, tracker, library and player for Linux"
+authors = ["Kozein"]
 license = "MIT"
 edition = "2021"
 

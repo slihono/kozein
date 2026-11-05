@@ -10,7 +10,7 @@ import type { ThemeId } from './themes';
 
 type RGB = [number, number, number];
 
-const ACCENT_STORAGE_KEY = 'anix-system-accent';
+const ACCENT_STORAGE_KEY = 'kozein-system-accent';
 const MIN_CONTRAST = 4.5;
 const THEMES_WITHOUT_OVERRIDE: ThemeId[] = ['manga'];
 

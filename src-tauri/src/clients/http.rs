@@ -15,7 +15,7 @@ use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
 /// How the app names itself to the services it talks to as itself (not as a browser).
-pub const APP_USER_AGENT: &str = concat!("Anix/", env!("CARGO_PKG_VERSION"));
+pub const APP_USER_AGENT: &str = concat!("Kozein/", env!("CARGO_PKG_VERSION"));
 
 pub const USER_AGENT: &str =
     "Mozilla/5.0 (X11; Linux x86_64; rv:146.0) Gecko/20100101 Firefox/146.0";

@@ -109,8 +109,8 @@ fn wait(app: AppHandle, server: Arc<Server>, cancelled: Arc<AtomicBool>, state: 
                 tracing::warn!("Comick sign-in: callback for another attempt ignored");
                 let _ = request.respond(page(
                     400,
-                    "This sign-in link is not the one Anix is waiting for",
-                    "Start the sign-in again from Anix › Settings › Account.",
+                    "This sign-in link is not the one Kozein is waiting for",
+                    "Start the sign-in again from Kozein › Settings › Account.",
                 ));
             }
             ComickCallback::Answer(redirect) => {
@@ -123,7 +123,7 @@ fn wait(app: AppHandle, server: Arc<Server>, cancelled: Arc<AtomicBool>, state: 
                     Some(&verifier),
                 ));
                 let response = match &result {
-                    Ok(_) => page(200, "Connected to Comick", "You can close this tab and return to Anix."),
+                    Ok(_) => page(200, "Connected to Comick", "You can close this tab and return to Kozein."),
                     Err(message) => page(200, "Comick sign-in failed", message),
                 };
                 let _ = request.respond(response);

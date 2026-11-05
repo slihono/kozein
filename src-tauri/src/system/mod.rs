@@ -43,7 +43,7 @@ pub fn restart_args(args: &[OsString]) -> Vec<OsString> {
 /// Set by [`restart`]; the app's `RunEvent::Exit` handler then calls [`restart_if_asked`].
 static RESTART_ASKED: AtomicBool = AtomicBool::new(false);
 
-/// Restarts Anix like `AppHandle::restart`, but with [`restart_args`] instead of the original
+/// Restarts Kozein like `AppHandle::restart`, but with [`restart_args`] instead of the original
 /// launch arguments. Off the main thread it asks the event loop to exit, so the exit handlers
 /// run first; on the GTK main thread, which must not block, it restarts directly, as Tauri does.
 pub fn restart(app: &AppHandle) -> ! {
@@ -61,8 +61,8 @@ pub fn restart(app: &AppHandle) -> ! {
     }
 }
 
-/// Closing the terminal Anix was started from (SIGHUP), `kill` (SIGTERM) and Ctrl+C (SIGINT)
-/// end Anix like Quit does, so the exit handler runs (players stopped, session marker removed).
+/// Closing the terminal Kozein was started from (SIGHUP), `kill` (SIGTERM) and Ctrl+C (SIGINT)
+/// end Kozein like Quit does, so the exit handler runs (players stopped, session marker removed).
 /// A stuck app still ends: it is forced out a few seconds after the signal.
 pub fn exit_on_signals(app: &AppHandle) {
     use tokio::signal::unix::{signal, SignalKind};
@@ -74,7 +74,7 @@ pub fn exit_on_signals(app: &AppHandle) {
         let (Ok(mut hup), Ok(mut term), Ok(mut int)) =
             (hup.transpose(), signal(SignalKind::terminate()), signal(SignalKind::interrupt()))
         else {
-            tracing::warn!("Quit signals could not be watched; they end Anix without its exit steps");
+            tracing::warn!("Quit signals could not be watched; they end Kozein without its exit steps");
             return;
         };
         let name = tokio::select! {
@@ -86,7 +86,7 @@ pub fn exit_on_signals(app: &AppHandle) {
         app.exit(0);
         tracing::info!("{} received, quitting", name);
         tokio::time::sleep(FORCE_AFTER).await;
-        tracing::warn!("Anix did not quit within {:?} of {}; forcing it", FORCE_AFTER, name);
+        tracing::warn!("Kozein did not quit within {:?} of {}; forcing it", FORCE_AFTER, name);
         std::process::exit(1);
     });
 }
@@ -121,7 +121,7 @@ pub struct SystemSettings {
     pub minimize_to_tray: bool,
     /// "Start with the desktop session (minimised to tray)".
     pub start_with_desktop: bool,
-    /// "Alerts while Anix is closed": `--background` is started at login.
+    /// "Alerts while Kozein is closed": `--background` is started at login.
     pub background_alerts: bool,
 }
 
@@ -171,7 +171,7 @@ pub fn apply(app: &tauri::AppHandle, settings: SystemSettings) {
     }
     let background = settings.background_alerts.then(autostart::current_exec_target).flatten();
     if let Err(e) = background::install(&config_home, background.as_deref()) {
-        tracing::warn!("Alerts while Anix is closed could not be set up: {}", e);
+        tracing::warn!("Alerts while Kozein is closed could not be set up: {}", e);
     }
 }
 

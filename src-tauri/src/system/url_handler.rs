@@ -4,20 +4,20 @@
 //! as the poster menu's "Copy link" do nothing outside the app. On the first run of an AppImage
 //! this writes one hidden `.desktop` file into `$XDG_DATA_HOME/applications` that declares the
 //! schemes and starts the AppImage with the link. It is written again only when the AppImage it
-//! names no longer exists (the file was moved), and a file of the same name that Anix did not
+//! names no longer exists (the file was moved), and a file of the same name that Kozein did not
 //! write is never touched. RPM and DEB packages install their own entry, so they skip this.
 
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
 
-pub const FILE_NAME: &str = "anix-url-handler.desktop";
+pub const FILE_NAME: &str = "kozein-url-handler.desktop";
 /// Marks the file as ours and records which AppImage it starts, so a later run can tell
 /// whether that file still exists without parsing the quoted `Exec` line.
-const TARGET_KEY: &str = "X-Anix-AppImage=";
-const SCHEMES: [&str; 2] = ["x-scheme-handler/anix", "x-scheme-handler/anilili"];
+const TARGET_KEY: &str = "X-Kozein-AppImage=";
+const SCHEMES: [&str; 3] = ["x-scheme-handler/kozein", "x-scheme-handler/anix", "x-scheme-handler/anilili"];
 
-/// `<data home>/applications/anix-url-handler.desktop`.
+/// `<data home>/applications/kozein-url-handler.desktop`.
 pub fn handler_path(data_home: &Path) -> PathBuf {
     data_home.join("applications").join(FILE_NAME)
 }
@@ -32,7 +32,7 @@ pub fn handler_entry(appimage: &Path) -> Option<String> {
     Some(format!(
         "[Desktop Entry]\n\
          Type=Application\n\
-         Name=Anix\n\
+         Name=Kozein\n\
          Exec={} %u\n\
          Icon=anix\n\
          Terminal=false\n\
@@ -52,7 +52,7 @@ pub fn needs_writing(existing: Option<&str>, exists: impl Fn(&Path) -> bool) -> 
     let Some(text) = existing else { return true };
     match text.lines().find_map(|line| line.strip_prefix(TARGET_KEY)) {
         Some(target) => !exists(Path::new(target)),
-        // Not written by Anix.
+        // Not written by Kozein.
         None => false,
     }
 }
@@ -64,7 +64,7 @@ pub fn register(data_home: &Path, appimage: &Path) -> io::Result<bool> {
     let existing = match fs::read_to_string(&path) {
         Ok(text) => Some(text),
         Err(e) if e.kind() == io::ErrorKind::NotFound => None,
-        // Unreadable or not text, so not a file Anix wrote: left alone.
+        // Unreadable or not text, so not a file Kozein wrote: left alone.
         Err(e) => {
             tracing::debug!("{} is left alone: {}", path.display(), e);
             return Ok(false);

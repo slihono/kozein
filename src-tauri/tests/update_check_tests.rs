@@ -48,12 +48,12 @@ fn the_site_address_is_a_web_address_without_a_trailing_slash_problem() {
 fn the_version_document_is_read_leniently() {
     let site = "https://site.example";
     let full = parse_version_document(
-        &json!({ "version": "1.1.0", "notes": "Themes", "published_at": "2026-10-10", "download_url": "https://dl.example/Anix.AppImage" }),
+        &json!({ "version": "1.1.0", "notes": "Themes", "published_at": "2026-10-10", "download_url": "https://dl.example/Kozein.AppImage" }),
         site,
     );
     assert_eq!(
         full,
-        Some(UpdateInfo::new("1.1.0".into(), "Themes".into(), "2026-10-10".into(), "https://dl.example/Anix.AppImage".into()))
+        Some(UpdateInfo::new("1.1.0".into(), "Themes".into(), "2026-10-10".into(), "https://dl.example/Kozein.AppImage".into()))
     );
 
     // Only the version is required.
@@ -92,10 +92,10 @@ async fn the_update_check_reads_version_json_from_the_site() {
     assert_eq!(fetch_update_info(&client(), &base).await, Ok(None));
 
     *answer.lock().unwrap() = Resp::json(json!({
-        "version": "1.2.0", "notes": "Fixes", "published_at": "2026-11-01", "download_url": "https://dl.example/Anix_1.2.0.AppImage"
+        "version": "1.2.0", "notes": "Fixes", "published_at": "2026-11-01", "download_url": "https://dl.example/Kozein_1.2.0.AppImage"
     }));
     let info = fetch_update_info(&client(), &format!("{}/", base)).await.unwrap().unwrap();
-    assert_eq!(info, UpdateInfo::new("1.2.0".into(), "Fixes".into(), "2026-11-01".into(), "https://dl.example/Anix_1.2.0.AppImage".into()));
+    assert_eq!(info, UpdateInfo::new("1.2.0".into(), "Fixes".into(), "2026-11-01".into(), "https://dl.example/Kozein_1.2.0.AppImage".into()));
     assert!(site.hits().iter().all(|hit| hit == "GET /version.json"), "{:?}", site.hits());
 
     // Without a download address the site's download page is used.
@@ -110,7 +110,7 @@ async fn the_update_check_reads_version_json_from_the_site() {
     assert_eq!(keys, ["changelog", "published_at", "release_url", "version"]);
 
     // A site that answers every address with its own page publishes no update information.
-    *answer.lock().unwrap() = Resp::html("<!doctype html><html><body>Anix</body></html>");
+    *answer.lock().unwrap() = Resp::html("<!doctype html><html><body>Kozein</body></html>");
     assert_eq!(fetch_update_info(&client(), &base).await, Ok(None));
     *answer.lock().unwrap() = Resp::json(json!({ "notes": "no version here" }));
     assert_eq!(fetch_update_info(&client(), &base).await, Ok(None));
@@ -146,11 +146,11 @@ impl Install {
         let dir = std::env::temp_dir().join(format!("anix-update-test-{}-{}", name, std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap();
-        std::fs::write(dir.join("Anix.AppImage"), b"old version").unwrap();
+        std::fs::write(dir.join("Kozein.AppImage"), b"old version").unwrap();
         Self(dir)
     }
     fn target(&self) -> PathBuf {
-        self.0.join("Anix.AppImage")
+        self.0.join("Kozein.AppImage")
     }
     fn names(&self) -> Vec<String> {
         let mut names: Vec<String> =
@@ -182,13 +182,13 @@ fn the_manifest_lists_the_appimage_with_its_checksum() {
     let site = "https://site.example";
     let hash = "AB".repeat(32);
     let info = parse_version_document(
-        &json!({ "version": "1.3.0", "appimage": { "url": "https://dl.example/Anix_1.3.0.AppImage", "sha256": hash, "size": 9000 } }),
+        &json!({ "version": "1.3.0", "appimage": { "url": "https://dl.example/Kozein_1.3.0.AppImage", "sha256": hash, "size": 9000 } }),
         site,
     )
     .unwrap();
     assert_eq!(
         info.appimage,
-        Some(AppImageAsset { url: "https://dl.example/Anix_1.3.0.AppImage".into(), sha256: "ab".repeat(32), size: Some(9000), min_glibc: None })
+        Some(AppImageAsset { url: "https://dl.example/Kozein_1.3.0.AppImage".into(), sha256: "ab".repeat(32), size: Some(9000), min_glibc: None })
     );
     let shape = serde_json::to_value(&info).unwrap();
     assert_eq!(shape["appimage"]["sha256"], json!("ab".repeat(32)));
@@ -245,7 +245,7 @@ fn only_a_writable_appimage_of_a_normal_user_can_be_replaced() {
     assert_eq!(appimage_target(Some(target.as_os_str()), 1000), Ok(target.clone()));
     assert!(appimage_target(None, 1000).unwrap_err().contains("not running as an AppImage"));
     assert!(appimage_target(Some(target.as_os_str()), 0).unwrap_err().contains("root"));
-    assert!(appimage_target(Some(std::ffi::OsStr::new("Anix.AppImage")), 1000).is_err(), "relative");
+    assert!(appimage_target(Some(std::ffi::OsStr::new("Kozein.AppImage")), 1000).is_err(), "relative");
     assert!(appimage_target(Some(install.0.join("missing").as_os_str()), 1000).is_err());
 
     use std::os::unix::fs::PermissionsExt;
@@ -259,20 +259,20 @@ fn only_a_writable_appimage_of_a_normal_user_can_be_replaced() {
 #[test]
 fn a_mismatching_checksum_aborts_and_keeps_the_old_file() {
     let install = Install::new("mismatch");
-    let downloaded = install.0.join(".Anix.AppImage.anix-update");
+    let downloaded = install.0.join(".Kozein.AppImage.anix-update");
     std::fs::write(&downloaded, b"tampered").unwrap();
 
     let error = install_verified(&downloaded, &install.target(), HASH_OF_NEW).unwrap_err();
 
     assert!(error.contains("does not match its checksum"), "{}", error);
     assert_eq!(std::fs::read(install.target()).unwrap(), b"old version");
-    assert_eq!(install.names(), vec!["Anix.AppImage"], "the download is deleted and no backup is made");
+    assert_eq!(install.names(), vec!["Kozein.AppImage"], "the download is deleted and no backup is made");
 }
 
 #[test]
 fn a_verified_update_replaces_the_appimage_and_keeps_a_backup() {
     let install = Install::new("verified");
-    let downloaded = install.0.join(".Anix.AppImage.anix-update");
+    let downloaded = install.0.join(".Kozein.AppImage.anix-update");
     std::fs::write(&downloaded, b"new version").unwrap();
 
     let backup = install_verified(&downloaded, &install.target(), &sha256(b"new version").to_uppercase()).unwrap();
@@ -282,37 +282,37 @@ fn a_verified_update_replaces_the_appimage_and_keeps_a_backup() {
     assert_eq!(std::fs::read(&backup).unwrap(), b"old version");
     use std::os::unix::fs::PermissionsExt;
     assert_eq!(std::fs::metadata(install.target()).unwrap().permissions().mode() & 0o111, 0o111, "executable");
-    assert_eq!(install.names(), vec!["Anix.AppImage", "Anix.AppImage.bak"]);
+    assert_eq!(install.names(), vec!["Kozein.AppImage", "Kozein.AppImage.bak"]);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_update_is_downloaded_next_to_the_appimage_and_checked_before_it_replaces_it() {
     let site = Site::start(|request: &Req| match request.route() {
-        "/Anix_1.3.0.AppImage" => Resp::new(200, "application/octet-stream", b"new version".to_vec()),
+        "/Kozein_1.3.0.AppImage" => Resp::new(200, "application/octet-stream", b"new version".to_vec()),
         _ => Resp::status(404),
     })
     .await;
     let install = Install::new("download");
-    let good = AppImageAsset { url: site.url("/Anix_1.3.0.AppImage"), sha256: sha256(b"new version"), size: None, min_glibc: None };
+    let good = AppImageAsset { url: site.url("/Kozein_1.3.0.AppImage"), sha256: sha256(b"new version"), size: None, min_glibc: None };
 
     // A file that does not match the manifest never replaces the AppImage.
     let tampered = AppImageAsset { sha256: HASH_OF_NEW.to_string(), ..good.clone() };
     let error = download_and_install(&client(), &tampered, &install.target(), |_| {}).await.unwrap_err();
     assert!(error.contains("checksum"), "{}", error);
     assert_eq!(std::fs::read(install.target()).unwrap(), b"old version");
-    assert_eq!(install.names(), vec!["Anix.AppImage"]);
+    assert_eq!(install.names(), vec!["Kozein.AppImage"]);
 
     let missing = AppImageAsset { url: site.url("/gone.AppImage"), ..good.clone() };
     assert!(download_and_install(&client(), &missing, &install.target(), |_| {}).await.unwrap_err().contains("HTTP 404"));
-    assert_eq!(install.names(), vec!["Anix.AppImage"]);
+    assert_eq!(install.names(), vec!["Kozein.AppImage"]);
 
     let mut seen = Vec::new();
     download_and_install(&client(), &good, &install.target(), |f| seen.push(f)).await.unwrap();
     assert_eq!(std::fs::read(install.target()).unwrap(), b"new version");
     assert_eq!(std::fs::read(backup_path(&install.target())).unwrap(), b"old version");
     assert_eq!(seen.last().copied(), Some(1.0));
-    assert!(Path::new(&install.0).join("Anix.AppImage.bak").exists());
-    assert_eq!(install.names(), vec!["Anix.AppImage", "Anix.AppImage.bak"], "the partial download is gone");
+    assert!(Path::new(&install.0).join("Kozein.AppImage.bak").exists());
+    assert_eq!(install.names(), vec!["Kozein.AppImage", "Kozein.AppImage.bak"], "the partial download is gone");
 }
 
 #[test]
@@ -337,7 +337,7 @@ fn an_update_can_be_undone_while_its_backup_is_kept() {
     let install = Install::new("rollback");
     let data = install.0.join("data");
     std::fs::create_dir_all(&data).unwrap();
-    let downloaded = install.0.join(".Anix.AppImage.anix-update");
+    let downloaded = install.0.join(".Kozein.AppImage.anix-update");
     std::fs::write(&downloaded, b"new version").unwrap();
     let backup = install_verified(&downloaded, &install.target(), &sha256(b"new version")).unwrap();
 
@@ -349,7 +349,7 @@ fn an_update_can_be_undone_while_its_backup_is_kept() {
     let record = roll_back(&data, "1.4.0", &install.target()).unwrap();
     assert_eq!(record.from, "1.3.2");
     assert_eq!(std::fs::read(install.target()).unwrap(), b"old version", "the previous AppImage is back");
-    assert_eq!(install.names(), vec!["Anix.AppImage", "data"], "the backup became the AppImage");
+    assert_eq!(install.names(), vec!["Kozein.AppImage", "data"], "the backup became the AppImage");
     assert!(!data.join(ROLLBACK_FILE).exists(), "the record is used up");
     assert!(roll_back(&data, "1.4.0", &install.target()).is_err(), "and cannot be used twice");
 }
@@ -376,7 +376,7 @@ fn a_backup_made_after_the_record_is_not_offered() {
     let install = Install::new("rollback-stale");
     let data = install.0.join("data");
     std::fs::create_dir_all(&data).unwrap();
-    let downloaded = install.0.join(".Anix.AppImage.anix-update");
+    let downloaded = install.0.join(".Kozein.AppImage.anix-update");
     // A different size from "old version", so the check does not hang on timestamp granularity.
     std::fs::write(&downloaded, b"version 1.4.0").unwrap();
     let backup = install_verified(&downloaded, &install.target(), &sha256(b"version 1.4.0")).unwrap();
@@ -413,8 +413,8 @@ fn two_builds(version: &str) -> UpdateInfo {
     parse_version_document(
         &json!({
             "version": version,
-            "appimage": { "url": "https://dl.example/Anix.AppImage", "sha256": "aa".repeat(32) },
-            "appimage_modern": { "url": "https://dl.example/Anix-modern.AppImage", "sha256": "bb".repeat(32), "min_glibc": "2.39" }
+            "appimage": { "url": "https://dl.example/Kozein.AppImage", "sha256": "aa".repeat(32) },
+            "appimage_modern": { "url": "https://dl.example/Kozein-modern.AppImage", "sha256": "bb".repeat(32), "min_glibc": "2.39" }
         }),
         "https://site.example",
     )
@@ -426,16 +426,16 @@ fn a_system_with_a_new_enough_glibc_gets_the_newer_base_appimage() {
     let info = two_builds("1.4.0");
     assert_eq!(info.appimage_modern.as_ref().unwrap().min_glibc.as_deref(), Some("2.39"));
     let url = |modern, glibc| pick_appimage(&info, modern, glibc).map(|a| a.url.as_str());
-    assert_eq!(url(false, Some("2.39")), Some("https://dl.example/Anix-modern.AppImage"));
-    assert_eq!(url(false, Some("2.41")), Some("https://dl.example/Anix-modern.AppImage"));
+    assert_eq!(url(false, Some("2.39")), Some("https://dl.example/Kozein-modern.AppImage"));
+    assert_eq!(url(false, Some("2.41")), Some("https://dl.example/Kozein-modern.AppImage"));
     // Older or unknown glibc keeps the classic build, which runs everywhere.
-    assert_eq!(url(false, Some("2.35")), Some("https://dl.example/Anix.AppImage"));
-    assert_eq!(url(false, None), Some("https://dl.example/Anix.AppImage"));
+    assert_eq!(url(false, Some("2.35")), Some("https://dl.example/Kozein.AppImage"));
+    assert_eq!(url(false, None), Some("https://dl.example/Kozein.AppImage"));
     // A newer-base install stays on its build.
-    assert_eq!(url(true, None), Some("https://dl.example/Anix-modern.AppImage"));
+    assert_eq!(url(true, None), Some("https://dl.example/Kozein-modern.AppImage"));
     // A site that lists only the classic build still updates everyone.
-    let classic = parse_version_document(&json!({ "version": "1.4.0", "appimage": { "url": "https://dl.example/Anix.AppImage", "sha256": "aa".repeat(32) } }), "https://s.example").unwrap();
-    assert_eq!(pick_appimage(&classic, true, None).map(|a| a.url.as_str()), Some("https://dl.example/Anix.AppImage"));
+    let classic = parse_version_document(&json!({ "version": "1.4.0", "appimage": { "url": "https://dl.example/Kozein.AppImage", "sha256": "aa".repeat(32) } }), "https://s.example").unwrap();
+    assert_eq!(pick_appimage(&classic, true, None).map(|a| a.url.as_str()), Some("https://dl.example/Kozein.AppImage"));
     assert!(system_glibc().is_some_and(|v| v.starts_with("2.")));
 }
 

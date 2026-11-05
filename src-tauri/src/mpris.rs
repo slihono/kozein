@@ -16,7 +16,7 @@ use zbus::{interface, Connection};
 pub const MPRIS_EVENT: &str = "mpris-control";
 
 const OBJECT_PATH: &str = "/org/mpris/MediaPlayer2";
-const BUS_NAME: &str = "org.mpris.MediaPlayer2.anix";
+const BUS_NAME: &str = "org.mpris.MediaPlayer2.kozein";
 const NO_TRACK: &str = "/org/mpris/MediaPlayer2/TrackList/NoTrack";
 
 /// What the player shows, as the frontend reports it. Times are in seconds.
@@ -139,7 +139,7 @@ impl Root {
 
     #[zbus(property)]
     fn identity(&self) -> String {
-        "Anix".to_string()
+        "Kozein".to_string()
     }
 
     #[zbus(property)]

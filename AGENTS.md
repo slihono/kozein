@@ -1,11 +1,11 @@
 # AGENTS.md
 
-Guide for coding agents and contributors working on **Anix**. Read it before you change code.
+Guide for coding agents and contributors working on **Kozein**. Read it before you change code.
 If this file and the code disagree, the code wins. Fix this file in the same change.
 
-## What Anix is
+## What Kozein is
 
-Anix is a Linux desktop app for anime. It has:
+Kozein includes a Linux desktop app for anime. It has:
 
 - a catalogue (search, discover, details)
 - a tracker (watch history, watchlist, AniList/MyAnimeList/Comick sync)
@@ -18,11 +18,21 @@ Streaming sources are not built in. They come from **extensions**: JavaScript fi
 from extension repositories (see [Extensions](#extensions)). The extensions live in a separate
 repository (`../plugins`, which has its own `AGENTS.md`).
 
-- Version 1.4.0, identifier `io.anix.app`, licence MIT.
-- Public site: https://anix-linux.vercel.app (download page, extension list, `version.json` for update checks).
+- Version 1.0.0, identifier `io.kozein.app`, licence MIT.
+- Upstream extension directory: https://anix-linux.vercel.app. Kozein updates are disabled unless `KOZEIN_SITE_URL` is provided at compile time.
 - The app was first called **Anilili**. Old names still work and must keep working: `ANILILI_*`
-  env vars, the `$anilili` plugin global, `anilili://` links, and old data folders (migrated by
-  `src-tauri/src/migration.rs`).
+  env vars, the `$anilili` plugin global, `anilili://` links, and the original plugin contracts. Kozein data folders are independent; original Anix/Anilili profiles are not migrated automatically.
+
+## Kozein additions
+
+- `src/main.tsx` loads the native `App` only in Tauri; ordinary browsers load `WebApp` with real Jikan requests and local storage. Never simulate native commands in browser mode.
+- `src/screens/Reading.tsx` is shared by both interfaces. Images and reading positions live in IndexedDB (`kozein-reading`), separately from SQLite backups.
+- `src/lib/reading.ts` validates image types, count and byte limits; the UI also decodes images before saving. Keep rejection tests in `scripts/kozein-test.mjs`.
+- New Kozein interface text has French and English translations; other locale files retain the English text for new keys. Do not lose inherited translations.
+- `npm test` runs the inherited suites and Kozein tests; `npm run floor` uses `upstream/main` as its comparison base.
+- The technical Rust package/library names remain `anix` / `anix_lib` for build compatibility. Public identity and icons are Kozein. Keep all upstream copyright notices.
+- No native Windows/Android/iOS binary is provided. Browser support does not imply native feature parity.
+- Read `PROJECT.md`, `README.md` and `UPSTREAMS.json` for the current architecture, capabilities and provenance.
 
 ## Architecture
 
@@ -36,7 +46,7 @@ React/TS UI (src/)  ──invoke()──▶  Tauri 2 commands (src-tauri/src/com
    downloads/   local_library.rs   embedded_mpv/ (libmpv, loaded at run time)
 ```
 
-- **Frontend:** React 18, react-router 6, @tanstack/react-query 5, zustand 5, Tailwind 3, Vite 6, hls.js.
+- **Frontend:** React 18, react-router 7, @tanstack/react-query 5, zustand 5, Tailwind 3, Vite 6, hls.js.
 - **Backend:** Rust 2021 with Tauri 2, tokio, reqwest, sqlx (SQLite, WAL), rquickjs, oxc (TS → JS), tiny_http, zbus (MPRIS).
 - **IPC:** the UI calls `#[tauri::command]`s through one hook per area in `src/hooks/useX.ts`, wrapped in react-query.
 - **Network:** all HTTP goes through the shared clients in `src-tauri/src/clients/http.rs`, where DNS-over-HTTPS applies.
@@ -108,7 +118,7 @@ Notes:
 - `ANIX_PLAYER_ENGINE=web` or `--web-player` forces the web player. `--background` runs the release checks with no window.
 - Crash handling: `running.marker` in the data folder counts starts in a row that did not exit cleanly (`system/session_marker.rs`). One shows a notice; two start **safe mode** (`system/safe_mode.rs`, decided in `main` before WebKit starts): web player, `WEBKIT_DISABLE_COMPOSITING_MODE=1`, no extension-list refresh at start, no reopened screen. One clean exit ends it. To try it, write `1 1` into a scratch profile's `running.marker`.
 - Updates: after an in-app update the old AppImage stays as `<name>.bak` and `update-rollback.json` records both versions, so Settings › System can go back (`clients/update.rs`: `rollback_available`, `roll_back`). `version.json` may list `"bad_versions"`; a listed running version gets a notice at start.
-- The only deep link is `anix://anime/<id>` (negative ids allowed), parsed by `parseDeepLink` in `src/lib/routes.ts`.
+- The primary deep link is `kozein://anime/<id>` (with `anix`/`anilili` aliases) (negative ids allowed), parsed by `parseDeepLink` in `src/lib/routes.ts`.
   An AppImage registers the `anix://`/`anilili://` handler itself on start (`system/url_handler.rs`: one hidden `.desktop` file in `$XDG_DATA_HOME/applications`, rewritten only when the AppImage it names is gone). Tests pass a temp data folder and never run `xdg-mime`.
 
 ## Release build (overview)

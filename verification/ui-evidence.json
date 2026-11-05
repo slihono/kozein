@@ -1,0 +1,19 @@
+{
+  "contract": "../PROJECT.md — bibliothèque anime/manga, catalogue réel, lecture locale et navigation persistante",
+  "targetViewports": ["390x844", "960x780", "1440x900"],
+  "accessibility": {"status": "pass", "evidence": "Navigation sémantique nommée, flèches et Échap testés dans le lecteur ; commandes mobiles de 53 px de haut. Les limites de vérification des préférences système sont dans REPORT.md."},
+  "responsive": {"status": "pass", "evidence": "Interface rendue vérifiée aux trois tailles ; aucun débordement horizontal mesuré ; navigation mobile et lecteur ouverts. La capture mobile est remplacée par le DOM et les mesures rendus."},
+  "contentStates": {
+    "loading": {"status": "pass", "evidence": "Structure du catalogue visible avec état de chargement avant les résultats publics, desktop-loading.jpg."},
+    "empty": {"status": "untested", "evidence": "Actions de bibliothèque vide implémentées ; aucune capture dédiée enregistrée."},
+    "error": {"status": "pass", "evidence": "Catalogue en erreur avec Réessayer avant ajout du repli ; SVG refusé avec message et volume conservé."},
+    "partial": {"status": "untested", "evidence": "Le catalogue indépendant de secours est vérifié, mais le rendu du cache périmé après panne totale reste à exercer."},
+    "success": {"status": "pass", "evidence": "Ajout, persistance de liste, copie du lien, import manga et reprise vérifiés dans le navigateur."},
+    "permission": {"status": "untested", "evidence": "Sélecteur de fichiers et partage autorisé vérifiés ; refus du stockage et du presse-papiers non exercés visuellement."}
+  },
+  "renderedEvidence": [
+    {"viewport":"390x844", "artifact":"mobile-390-dom.txt", "observation":"Lecteur ouvert, mesures des commandes et absence de débordement ; outil de capture indisponible à cette taille."},
+    {"viewport":"960x780", "artifact":"window-960.jpg", "observation":"Bibliothèque lisible ; neuf thèmes vérifiés et capturés séparément."},
+    {"viewport":"1440x900", "artifact":"desktop-1440.jpg", "observation":"Catalogue réel et navigation large ; capture pleine page incluant la grille."}
+  ]
+}

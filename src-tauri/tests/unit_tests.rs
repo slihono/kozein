@@ -469,7 +469,7 @@ fn errors_map_to_stable_short_codes() {
 fn gnutls_priority_is_set_only_for_an_appimage_without_a_policy_or_user_value() {
     use anix_lib::system::gnutls::needs_priority;
     use std::ffi::OsStr;
-    let appimage = Some(OsStr::new("/home/u/Anix.AppImage"));
+    let appimage = Some(OsStr::new("/home/u/Kozein.AppImage"));
     assert!(needs_priority(appimage, false, None));
     assert!(!needs_priority(appimage, true, None), "Fedora ships the policy file");
     assert!(!needs_priority(appimage, false, Some(OsStr::new("PERFORMANCE"))), "a user value wins");

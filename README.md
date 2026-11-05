@@ -1,207 +1,87 @@
-<div align="center">
+# Kozein
 
-<img src="public/logo.png" alt="Anix logo" width="120" />
+[Dépôt GitHub](https://github.com/slihono/kozein) · [Application web](https://slihono.github.io/kozein/)
 
-# Anix
+Un espace anime et manga maintenu par **Kozein** : découverte, bibliothèque personnelle, lecture et vidéo.
 
-### An anime catalogue, tracker, and local library player for Linux
+Ce dépôt réunit le code Linux d’[Anix](https://github.com/MaidLover69/Anix), une nouvelle interface navigateur et un lecteur manga local. [Weebox 1.1.0](https://github.com/RimamashiroHina/Weebox/releases/tag/v1.1.0) sert de référence fonctionnelle : son dépôt public ne fournit pas le code de l’application. Aucun binaire Weebox n’a été renommé ou intégré.
 
-[![Platform](https://img.shields.io/badge/Platform-Linux%20(AppImage%20%7C%20RPM%20%7C%20DEB%20%7C%20Flatpak)-E95420?logo=linux&logoColor=white)](https://anix-linux.vercel.app)
-[![Version](https://img.shields.io/badge/Version-1.4.0-blue.svg)](CHANGELOG.md)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+## Démarrage rapide — Windows, macOS, Linux
 
-<p align="center">
-  <b>Anix</b> is a native Linux desktop application for cataloguing and tracking anime. Browse the AniList catalogue, keep your AniList, MyAnimeList, and Comick watchlists in sync, follow weekly airing schedules with desktop notifications, and organize and play your local anime media library using the built-in player or MPV / VLC. Zero telemetry.
-</p>
+Avec Node.js 22.6 ou plus récent :
 
-**Website:** <https://anix-linux.vercel.app> • **GitHub:** <https://github.com/MaidLover69/Anix> • **Codeberg:** <https://codeberg.org/MaidLover69/Anix>
-
-</div>
-
----
-
-## Contents
-
-- [Screenshots](#screenshots)
-- [Features](#features)
-- [Installation](#installation)
-- [Extensions](#extensions)
-- [Keyboard Shortcuts](#keyboard-shortcuts)
-- [Built With](#built-with)
-- [License](#license)
-
----
-
-## Screenshots
-
-| Home | Anime Page |
-| :---: | :---: |
-| ![Home](screenshots/home.png) | ![Anime page](screenshots/detail.png) |
-| **Player** | **Discover** |
-| ![Player](screenshots/player.png) | ![Discover](screenshots/discover.png) |
-| **Schedule** | **Settings** |
-| ![Schedule](screenshots/schedule.png) | ![Settings](screenshots/settings.png) |
-
----
-
-## Features
-
-### Catalogue & Discovery
-- **AniList Catalogue**: Comprehensive home, discover, and search views with detailed metadata, episode lists, character information, and recommendations.
-- **Theme Songs & Metadata**: Opening and ending theme listings and episode markers.
-- **Quick Peek**: Instant hover previews for anime titles across catalogue grids.
-- **Surprise Me**: One-click random title discovery.
-
-### Tracker & Progress Sync
-- **AniList, MyAnimeList & Comick**: Seamless tracker authentication. Finished episodes update your watch progress automatically, and watchlist status is synchronized bidirectionally.
-- **Watch History & Resume**: Local per-episode watch history with timestamp resume and progress indicators.
-- **Stats Dashboard**: Library view with detailed anime watching statistics.
-
-### Local Media Library & Linking
-- **Local Episode Linking**: "Load your own episodes" on any anime's page to link local media folders or video files directly to that title.
-- **Smart Folder Scanner**: Automatically scans local media directories (e.g. `~/Videos/Anime`), recognizes release filenames, maps series titles and episode numbers, fetches AniList posters, and tracks progress.
-- **Companion Subtitles**: Automatically detects and loads adjacent subtitle files for local episodes.
-- **Playlists & Queues**: Create custom playlists, continuous playback, and export `.m3u` playlists for external players.
-
-### Video Player & Audio Controls
-- **Integrated Player**: Hardware-accelerated video playback with subtitle customisation (ASS, SRT, WebVTT font, size, styling, and timing delay).
-- **Secondary Subtitles**: Display two subtitle tracks simultaneously (e.g. learning languages) with secondary subtitles positioned at the top of the screen.
-- **Subtitle Drag & Drop**: Drop subtitle files directly onto the player window.
-- **AniSkip**: Automatic or one-click skip for opening and ending sequences.
-- **Dialogue Boost**: Intelligent audio speech enhancement for clearer dialogue.
-- **External Player Support (mpv & VLC)**: 1-click external player launch with active subtitle passthrough and bidirectional progress synchronization for mpv.
-- **Mini-Player**: Compact floating player mode for multitasking.
-- **Watch Together (beta)**: Watch an episode in step with up to 8 people on the same Wi-Fi or LAN. The host controls playback, guests join with a short code, and nothing goes over the internet. This feature is still untested on two real devices, because the developer does not have a second one. Please try it and share your feedback in an issue on [GitHub](https://github.com/MaidLover69/Anix/issues) or [Codeberg](https://codeberg.org/MaidLover69/Anix/issues).
-
-### Desktop Integration & System
-- **MPRIS Media Controls**: Full desktop media keys and lockscreen playback control integration.
-- **System Tray**: Optional background tray icon with airing notifications when the main window is closed.
-- **Hardware Acceleration Check**: In-app diagnostic tool to verify system GPU video decoding.
-- **Offline Mode**: Automatic local caching for home, searches, and anime details when internet or AniList is unreachable.
-- **Airing Alerts**: Weekly broadcast schedule calendar with countdown timers and desktop notifications.
-
-### Interface & Performance
-- **Built for Linux**: Lightweight native desktop client powered by Tauri v2 and Rust. Low memory footprint and snappy performance.
-- **Customizable Themes**: Dark, Light, Mocha, Hacker, Dracula, Tokyo Night, Manga, Comic, and pure OLED Black themes with system accent color matching and dynamic cover art ambient glow.
-- **Meme mode**: Low, Medium or High in Settings › Appearance; High dresses every screen in anime meme images and lines while the plain words stay.
-- **Keyboard-Driven**: Quick search with <kbd>Ctrl</kbd> + <kbd>K</kbd> and comprehensive in-player hotkeys.
-- **Privacy First**: No analytics or telemetry.
-
-### Languages
-- **Your language**: The interface is available in English, French, Japanese, Korean, Simplified Chinese, Brazilian Portuguese, Russian, Hindi, Spanish, German, Italian and Arabic (right to left). Pick it on first start or in Settings › Appearance › Language; "Use system language" is the default.
-- **Viewing languages**: Choose a first, second and third language for subtitles and for dubs; sources in those languages are tried in that order.
-- **About the translations**: Translations were made by AI, not by human translators. Corrections are welcome.
-
----
-
-## Extensions
-
-Anix features a modular plugin architecture supporting JavaScript extensions for custom community providers and metadata resolvers.
-
-- **Sandboxed Execution**: Extensions execute within an isolated QuickJS JavaScript engine without direct access to system files or OS processes.
-- **Seanime Provider Compatibility**: Extensions follow the standard `onlinestream-provider` format.
-- **Language Preferences**: Configurable priority for subtitle and audio dub languages (Settings › Sources).
-- **Easy Management**: Add, enable, test, or configure provider links directly in **Settings → Plugins**.
-
----
-
-## Installation
-
-Packages for Linux are available from the project website: <https://anix-linux.vercel.app/download>, [Codeberg Releases](https://codeberg.org/MaidLover69/Anix/releases), and [GitHub Releases](https://github.com/MaidLover69/Anix/releases).
-
-- **Direct Cloud Downloads:**
-  - **[Google Drive Folder](https://drive.google.com/drive/folders/1U6_kpB45iJxYZrEwfbt4n66TnssdH5-W?usp=sharing)** — Contains all Anix 1.4 packages (AppImage, DEB, RPM, Flatpak) and extension files.
-  - **[MEGA Alternative Folder](https://mega.nz/folder/7ExSlB6R#qA3pX6jIo6TIZXkXdvtnVg)** — Alternative mirror containing all Anix application packages.
-- **Releases:** Download AppImage (Classic & Modern), DEB, RPM, or Flatpak from [Codeberg Releases](https://codeberg.org/MaidLover69/Anix/releases) or [GitHub Releases](https://github.com/MaidLover69/Anix/releases).
-- **Arch User Repository (AUR):** Available via `anix-bin`.
-
-### AppImage (Universal, any distribution)
-
-Anix provides two official AppImage variants:
-- **Classic (`Anix_1.4.0_amd64.AppImage`)**: Built on Ubuntu 22.04 LTS (glibc 2.35+). Works across almost every Linux distribution including Ubuntu 22.04+, Debian 12+, Linux Mint 21+, Fedora 36+, openSUSE Leap 15.6+, Arch Linux, and CachyOS.
-- **Modern (`Anix_1.4.0_amd64-modern.AppImage`)**: Built on Ubuntu 24.04 LTS (glibc 2.39+) with newer WebKitGTK and runtime libraries for bleeding-edge systems.
-
-The built-in updater automatically detects system compatibility and selects or upgrades to the appropriate AppImage variant.
-
-```bash
-chmod +x Anix_1.4.0_amd64.AppImage
-./Anix_1.4.0_amd64.AppImage
+```sh
+npm ci
+npm run dev
 ```
 
-**FUSE 2:** AppImages need FUSE 2 to start. Fedora usually has it; on other distributions install it once if the AppImage does not open:
+Ouvrir `http://localhost:1420`. Pour une version optimisée :
 
-| Distribution | Command |
-|---|---|
-| Arch, CachyOS, Manjaro, EndeavourOS | `sudo pacman -S fuse2` |
-| Ubuntu 24.04 and newer, Linux Mint 22 | `sudo apt install libfuse2t64` |
-| Ubuntu 22.04, Debian 12 | `sudo apt install libfuse2` |
-| openSUSE | `sudo zypper install libfuse2` |
-| Fedora (only if missing) | `sudo dnf install fuse-libs` |
+```sh
+npm run build
+npm run preview -- --host 127.0.0.1
+```
 
-Without FUSE, start it with `./Anix_1.4.0_amd64.AppImage --appimage-extract-and-run`.
+Sous Windows, `Lancer-Kozein.cmd` lance la version navigateur et affiche son adresse. Le navigateur doit rester sur la même adresse et le même port pour retrouver ses données locales.
 
-**Missing thumbnails:** from 1.3.0 on, the AppImage fixes this itself (it sets `G_TLS_GNUTLS_PRIORITY=NORMAL` when your system has no GnuTLS crypto policy), so no command is needed any more. A value you set yourself is kept. Only 1.2.0 still needs the old workaround: `G_TLS_GNUTLS_PRIORITY=NORMAL ./Anix_1.2.0_amd64.AppImage`.
+## Fonctions
 
-*(Wayland note: the EGL display error some Wayland desktops showed is fixed from 1.3.1 on, because the AppImage now uses the system's Wayland libraries. For 1.3.0 and older, launch with `LD_PRELOAD=/usr/lib64/libwayland-client.so ./Anix_1.3.0_amd64.AppImage`; on Debian and Ubuntu the file is `/usr/lib/x86_64-linux-gnu/libwayland-client.so.0`.)*
+| Fonction | Navigateur | Application Linux |
+|---|---|---|
+| Recherche et découverte anime | Jikan / MyAnimeList, secours AniList | AniList et catalogues de secours |
+| Liste à regarder | Enregistrée dans le navigateur | Bibliothèque et comptes de suivi |
+| Vidéo locale | Formats lisibles par le navigateur, reprise en rouvrant le fichier | Lecteur web, mpv / VLC, bibliothèque locale |
+| Manga / BD | Pages image, stockage hors ligne, reprise, sens de lecture | Même lecteur local intégré |
+| Extensions de sources | — | Moteur QuickJS hérité d’Anix |
+| Synchronisation AniList / MAL / Comick | — | Fonctions héritées d’Anix ; configuration propre à la distribution à prévoir |
+| Séances partagées sur le réseau local | — | Fonction héritée d’Anix |
+| Téléchargements et notifications natives | — | Fonctions héritées d’Anix |
+| Interface mobile | Adaptative dans le navigateur | Fenêtre native de 960 px minimum |
 
-### Troubleshooting the video player
+Le lecteur manga accepte les pages JPEG, PNG, WebP, AVIF et GIF, triées naturellement par nom de fichier. Sélectionner toutes les pages d’un volume lors de l’import. Limites : 600 pages, 30 Mo et 80 millions de pixels par page, 350 Mo par volume. Les archives CBZ/CBR et PDF ne sont pas importées.
 
-From 1.3.0 on, videos play in an embedded mpv player by default (Settings › Playback › Player engine).
+La version navigateur n’installe pas de sources vidéo et ne simule pas une connexion aux comptes. Aucune compilation Windows `.exe`, APK Android ou version iPhone n’est fournie dans cette version.
 
-- **The window is blank or the video does not show after switching to embedded mpv:** wait 15 seconds. Anix asks whether the player shows correctly and, without an answer, goes back to the web player and restarts by itself. The 15 seconds only count while the Anix window is in front and focused, and a notice in the notification centre says when this happened.
-- **Start once with the web player, whatever the setting says:** run `./Anix_1.4.0_amd64.AppImage --web-player`, or set `ANIX_PLAYER_ENGINE=web` (for example `ANIX_PLAYER_ENGINE=web ./Anix_1.4.0_amd64.AppImage`). Then pick the engine you want in Settings › Playback.
-- **Black picture with sound:** set Settings › Playback › Hardware decoding to *Always copy-back* (or *Off*). *Automatic* already uses copy-back unless a hidden self-test passed on your machine; Settings › System › Hardware video decoding shows its result.
+## Application Linux
 
----
+Le moteur natif nécessite Rust stable et les dépendances Tauri 2 pour Linux (WebKitGTK 4.1, GTK 3, OpenSSL et AppIndicator). Le code natif conserve le nom technique `anix` / `anix_lib` pour rester compatible avec ses scripts et tests ; le nom public est Kozein.
 
-## Where Anix Stores Data
+```sh
+npm ci
+npm run tauri -- dev
+```
 
-| Item | Location |
-| :--- | :--- |
-| Database, watch history, settings | `~/.local/share/anix/` |
-| Configuration | `~/.config/anix/settings.json` |
-| Image cache | `~/.cache/anix/` |
+Les nouveaux profils natifs utilisent `kozein/` et l’identifiant `io.kozein.app`. Les dossiers des installations Anix et Anilili ne sont pas migrés automatiquement. Les liens `kozein://anime/<id>` fonctionnent, avec les anciens schémas comme alias.
 
----
+Les mises à jour natives sont désactivées par défaut pour éviter d’installer une version Anix par-dessus Kozein. Pour publier des mises à jour propres, définir `KOZEIN_SITE_URL` à la compilation vers un site de confiance servant le format `version.json` hérité. `ANIX_SITE_URL` reste utilisé par le répertoire d’extensions hérité. Ne jamais publier de clés ou secrets OAuth dans le dépôt.
 
-## Keyboard Shortcuts
+Le lecteur manga stocke ses images dans IndexedDB, séparément des sauvegardes SQLite natives. Conserver les fichiers originaux. Effacer les données de l’application ou du navigateur efface aussi ses données locales.
 
-During playback:
+## Vérification
 
-| Key | Action |
-| :--- | :--- |
-| <kbd>Space</kbd> / <kbd>K</kbd> | Play / Pause |
-| Hold <kbd>Space</kbd> | Play at 2× while held |
-| <kbd>[</kbd> / <kbd>]</kbd> | Speed down / up by 0.25× (0.25× to 3×) |
-| <kbd>F</kbd> | Toggle fullscreen |
-| <kbd>M</kbd> | Toggle mute |
-| <kbd>→</kbd> / <kbd>←</kbd> | Seek 5 seconds (<kbd>Shift</kbd>: 30s) |
-| <kbd>L</kbd> / <kbd>J</kbd> | Seek 10 seconds |
-| <kbd>↑</kbd> / <kbd>↓</kbd> | Volume up / down (5%) |
-| <kbd>Shift</kbd> + <kbd>N</kbd> / <kbd>P</kbd> | Next / Previous episode |
-| <kbd>S</kbd> | Skip intro / outro (or +85 s when no skip times are known) |
-| <kbd>Enter</kbd> / <kbd>Esc</kbd> | Skip now / cancel while the skip countdown runs |
-| <kbd>Esc</kbd> | Exit fullscreen |
+```sh
+npm run build
+npm test
+npm run i18n:check
+npm run floor
+```
 
-Anywhere in the app: <kbd>Ctrl</kbd> + <kbd>K</kbd> opens search, <kbd>?</kbd> shows keyboard shortcuts.
+Sur Linux avec Rust et les bibliothèques système installés :
 
----
+```sh
+cargo check --manifest-path src-tauri/Cargo.toml
+cargo test --manifest-path src-tauri/Cargo.toml
+```
 
-## Built With
+`npm run floor` compare au dépôt source `upstream/main`. Après un téléchargement sans historique Git, utiliser un clone pour cette vérification. Les ajouts Kozein sont traduits en français et en anglais ; les autres langues utilisent l’anglais pour ces ajouts. Les traductions héritées sont conservées.
 
-- **Frontend**: React 18, TypeScript, Tailwind CSS, Vite, TanStack Query, Zustand, Lucide.
-- **Backend**: Rust, Tauri v2, Tokio, WebKitGTK, QuickJS sandbox.
+## Origine et licence
 
----
+- Responsable de cette distribution et des ajouts : **Kozein**.
+- Code d’origine Anix : **MaidLover69**, licence MIT. Son historique et son copyright sont conservés.
+- Weebox : référence des usages anime, lecture et partage ; aucun code applicatif non public repris.
+- [UPSTREAMS.json](UPSTREAMS.json) épingle les deux révisions examinées.
+- [LICENSE](LICENSE) et [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) contiennent les crédits et licences.
+- [UPSTREAM-README.md](UPSTREAM-README.md) conserve la documentation originale pour l’historique ; ses téléchargements et versions appartiennent à Anix.
 
-## Contributing
-
-Bug reports, translation fixes and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md). Report security problems privately as described in [SECURITY.md](SECURITY.md).
-
----
-
-## License
-
-Distributed under the **MIT License**. See [LICENSE](LICENSE) for details.
-
-The MIT License does not cover the meme images in `assets/memes.zip` (Meme mode › High). They belong to their rights holders; see [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+Les textes et couvertures des catalogues appartiennent à leurs ayants droit. Aucune télémétrie ajoutée. Le navigateur contacte Jikan et les hôtes de couvertures pour afficher le catalogue.

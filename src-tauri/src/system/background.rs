@@ -1,4 +1,4 @@
-//! "Alerts while Anix is closed": `anix --background` runs only the release notifier and the
+//! "Alerts while Kozein is closed": `anix --background` runs only the release notifier and the
 //! release checks, with no window and no webview. It is started at login, by an autostart
 //! entry or a systemd user timer (see [`install`]).
 //!
@@ -95,7 +95,7 @@ impl crate::notifier::CheckGate for Handoff {
     fn may_check(&mut self) -> bool {
         // Switched off in Settings while running: nothing should check from here on.
         if !super::SystemSettings::read().background_alerts {
-            tracing::info!("Alerts while Anix is closed are switched off; the background process exits");
+            tracing::info!("Alerts while Kozein is closed are switched off; the background process exits");
             std::process::exit(0);
         }
         Handoff::may_check(self)
@@ -192,7 +192,7 @@ pub fn run() -> i32 {
 
         let on_click: crate::notifier::OnClick = Arc::new(open_app);
         let sink = crate::notifier::DesktopSink::new(
-            "Anix".to_string(),
+            "Kozein".to_string(),
             state.client.clone(),
             crate::notifier::cover_dir(),
             on_click,
@@ -233,7 +233,7 @@ fn open_app(click: crate::notifier::Click) {
     let mut cmd = std::process::Command::new(&exec);
     cmd.args(args);
     if let Err(e) = spawn_reaped(cmd) {
-        tracing::warn!("Could not start Anix from an alert: {}", e);
+        tracing::warn!("Could not start Kozein from an alert: {}", e);
     }
 }
 
@@ -248,17 +248,17 @@ fn spawn_reaped(mut cmd: std::process::Command) -> io::Result<()> {
 // Starting at login
 // ---------------------------------------------------------------------------------------
 
-pub const AUTOSTART_FILE_NAME: &str = "anix-release-check.desktop";
-pub const UNIT_NAME: &str = "anix-release-check";
+pub const AUTOSTART_FILE_NAME: &str = "kozein-release-check.desktop";
+pub const UNIT_NAME: &str = "kozein-release-check";
 /// Marks files this app wrote, so a hand-made file of the same name is never touched.
-const MARKER: &str = "X-Anix-Background=true";
+const MARKER: &str = "X-Kozein-Background=true";
 
 /// How the background process is started at login.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Starter {
-    /// `~/.config/systemd/user/anix-release-check.{service,timer}`.
+    /// `~/.config/systemd/user/kozein-release-check.{service,timer}`.
     SystemdTimer,
-    /// `~/.config/autostart/anix-release-check.desktop`.
+    /// `~/.config/autostart/kozein-release-check.desktop`.
     Autostart,
 }
 
@@ -289,8 +289,8 @@ pub fn autostart_entry(exec: &Path) -> String {
     format!(
         "[Desktop Entry]\n\
          Type=Application\n\
-         Name=Anix release alerts\n\
-         Comment=Checks for new episodes while Anix is closed\n\
+         Name=Kozein release alerts\n\
+         Comment=Checks for new episodes while Kozein is closed\n\
          Exec={} {}\n\
          Icon=anix\n\
          Terminal=false\n\
@@ -318,7 +318,7 @@ pub fn service_unit(exec: &Path) -> String {
     format!(
         "# {}\n\
          [Unit]\n\
-         Description=Anix release alerts while the app is closed\n\
+         Description=Kozein release alerts while the app is closed\n\
          \n\
          [Service]\n\
          Type=simple\n\
@@ -335,7 +335,7 @@ pub fn timer_unit() -> String {
     format!(
         "# {}\n\
          [Unit]\n\
-         Description=Starts Anix release alerts after login\n\
+         Description=Starts Kozein release alerts after login\n\
          \n\
          [Timer]\n\
          OnStartupSec=1min\n\
@@ -380,7 +380,7 @@ fn systemctl(args: &[&str]) {
     }
 }
 
-/// Applies the "Alerts while Anix is closed" switch for this login.
+/// Applies the "Alerts while Kozein is closed" switch for this login.
 pub fn install(config_home: &Path, exec: Option<&Path>) -> io::Result<()> {
     let how = starter(systemd_user_session());
     let timer = format!("{}.timer", UNIT_NAME);

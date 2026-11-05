@@ -169,14 +169,14 @@ pub fn from_bytes(bytes: &[u8]) -> Result<Backup, AppError> {
         json = bytes.to_vec();
     }
     let value: Value = serde_json::from_slice(&json)
-        .map_err(|_| AppError::Parse("This file is not an Anix backup.".to_string()))?;
+        .map_err(|_| AppError::Parse("This file is not an Kozein backup.".to_string()))?;
     if value["format"].as_str() != Some(FORMAT) {
-        return Err(AppError::Parse("This file is not an Anix backup.".to_string()));
+        return Err(AppError::Parse("This file is not an Kozein backup.".to_string()));
     }
     let version = value["version"].as_u64().unwrap_or(0);
     if version > VERSION as u64 {
         return Err(AppError::Other(format!(
-            "This backup was made by a newer version of Anix (backup format {}; this version reads format {}). Update Anix to restore it.",
+            "This backup was made by a newer version of Kozein (backup format {}; this version reads format {}). Update Kozein to restore it.",
             version, VERSION
         )));
     }

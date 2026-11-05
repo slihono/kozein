@@ -13,8 +13,8 @@ use std::io;
 use std::path::{Path, PathBuf};
 
 /// The bundle identifier in `tauri.conf.json`; Tauri names the webview's data folder after it.
-pub const IDENTIFIER: &str = "io.anix.app";
-pub const LEGACY_IDENTIFIER: &str = "io.anilili.linux";
+pub const IDENTIFIER: &str = "io.kozein.app";
+pub const LEGACY_IDENTIFIER: &str = "io.kozein.legacy";
 pub const LOG_FILE_NAME: &str = "anix.log";
 pub const LEGACY_LOG_FILE_NAME: &str = "anilili.log";
 

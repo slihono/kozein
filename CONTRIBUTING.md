@@ -1,3 +1,7 @@
+# Contributing to Kozein
+
+For Kozein changes, use this repository’s issues and pull requests. The upstream guidelines below remain relevant to the inherited Linux engine; links to upstream projects concern only those projects.
+
 # Contributing to Anix
 
 Thanks for wanting to help! Bug reports, translation fixes and small, focused pull requests are all welcome.

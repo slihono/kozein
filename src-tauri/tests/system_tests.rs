@@ -164,21 +164,21 @@ fn saved_schedule_prefers_anilist_over_an_estimate() {
 
 #[test]
 fn autostart_entry_names_the_program_and_starts_minimised() {
-    let entry = autostart::desktop_entry(Path::new("/opt/Anix/anix"));
+    let entry = autostart::desktop_entry(Path::new("/opt/Kozein/anix"));
     assert!(entry.starts_with("[Desktop Entry]\n"));
     assert!(entry.contains("\nType=Application\n"));
-    assert!(entry.contains("\nName=Anix\n"));
-    assert!(entry.contains("\nExec=/opt/Anix/anix --minimized\n"));
+    assert!(entry.contains("\nName=Kozein\n"));
+    assert!(entry.contains("\nExec=/opt/Kozein/anix --minimized\n"));
     assert!(entry.contains("\nX-GNOME-Autostart-enabled=true\n"));
-    assert!(entry.contains("\nX-Anix-Autostart=true\n"));
+    assert!(entry.contains("\nX-Kozein-Autostart=true\n"));
 }
 
 #[test]
 fn exec_arguments_are_quoted_as_the_desktop_entry_spec_asks() {
     assert_eq!(autostart::quote_exec_arg("/usr/bin/anix"), "/usr/bin/anix");
     assert_eq!(
-        autostart::quote_exec_arg("/run/media/me/Extra Volume/Anix.AppImage"),
-        "\"/run/media/me/Extra Volume/Anix.AppImage\""
+        autostart::quote_exec_arg("/run/media/me/Extra Volume/Kozein.AppImage"),
+        "\"/run/media/me/Extra Volume/Kozein.AppImage\""
     );
     // `$` and `"` are escaped inside the quotes, then every backslash is doubled.
     assert_eq!(autostart::quote_exec_arg("/a/$b\"c"), "\"/a/\\\\$b\\\\\"c\"");
@@ -187,10 +187,10 @@ fn exec_arguments_are_quoted_as_the_desktop_entry_spec_asks() {
 
 #[test]
 fn the_appimage_is_started_rather_than_its_mounted_binary() {
-    let exe = Some(PathBuf::from("/tmp/.mount_AnixAB/usr/bin/anix"));
+    let exe = Some(PathBuf::from("/tmp/.mount_KozeinAB/usr/bin/anix"));
     assert_eq!(
-        autostart::exec_target(Some("/home/u/Apps/Anix.AppImage".into()), exe.clone()),
-        Some(PathBuf::from("/home/u/Apps/Anix.AppImage"))
+        autostart::exec_target(Some("/home/u/Apps/Kozein.AppImage".into()), exe.clone()),
+        Some(PathBuf::from("/home/u/Apps/Kozein.AppImage"))
     );
     assert_eq!(autostart::exec_target(Some("".into()), exe.clone()), exe);
     assert_eq!(autostart::exec_target(None, exe.clone()), exe);
@@ -410,7 +410,7 @@ fn airing_next_labels_are_short() {
 #[test]
 fn directory_is_read_and_cleaned() {
     let data = br#"{ "lists": [
-        { "name": "Anix extensions", "description": "Made for Anix.", "url": "https://anix-linux.vercel.app/extensions", "languages": ["en", "JA", "toolong", "1"] },
+        { "name": "Kozein extensions", "description": "Made for Kozein.", "url": "https://anix-linux.vercel.app/extensions", "languages": ["en", "JA", "toolong", "1"] },
         { "name": "No https", "url": "http://example.com/x.json" },
         { "name": "", "url": "https://example.com/empty-name.json" },
         { "name": "Twice", "url": "https://anix-linux.vercel.app/extensions" },
@@ -420,7 +420,7 @@ fn directory_is_read_and_cleaned() {
     ] }"#;
     let lists = health::parse_directory(data).unwrap();
     assert_eq!(lists.len(), 2);
-    assert_eq!(lists[0].name, "Anix extensions");
+    assert_eq!(lists[0].name, "Kozein extensions");
     assert_eq!(lists[0].languages, vec!["en", "ja"]);
     assert_eq!(lists[1].name, "Minimal");
     assert_eq!(lists[1].description, "");
@@ -438,7 +438,7 @@ fn the_sites_own_directory_parses() {
         return;
     };
     let lists = health::parse_directory(&data).unwrap();
-    assert!(lists.iter().any(|l| l.url == "https://anix-linux.vercel.app/extensions" && l.name == "Anix extensions"));
+    assert!(lists.iter().any(|l| l.url == "https://anix-linux.vercel.app/extensions" && l.name == "Kozein extensions"));
 }
 
 #[test]
@@ -466,7 +466,7 @@ fn the_test_title_is_a_complete_media_object() {
 
 // ------------------------------------------------------------------ background release checks
 
-const APPIMAGE: &str = "/run/media/me/Extra Volume/Anix.AppImage";
+const APPIMAGE: &str = "/run/media/me/Extra Volume/Kozein.AppImage";
 
 #[test]
 fn background_switch_is_read_from_settings() {
@@ -479,20 +479,20 @@ fn background_switch_is_read_from_settings() {
 #[test]
 fn background_units_start_the_appimage_without_a_window() {
     let service = background::service_unit(Path::new(APPIMAGE));
-    assert!(service.contains("ExecStart=\"/run/media/me/Extra Volume/Anix.AppImage\" --background\n"));
+    assert!(service.contains("ExecStart=\"/run/media/me/Extra Volume/Kozein.AppImage\" --background\n"));
     assert!(service.contains("Type=simple"));
     // Stopping the unit must not take down an app window opened from one of its alerts.
     assert!(service.contains("KillMode=process\n"));
-    assert!(service.contains("X-Anix-Background=true"));
+    assert!(service.contains("X-Kozein-Background=true"));
 
     let timer = background::timer_unit();
     assert!(timer.contains("OnStartupSec=1min"));
     assert!(timer.contains("OnUnitInactiveSec=15min"));
-    assert!(timer.contains("Unit=anix-release-check.service"));
+    assert!(timer.contains("Unit=kozein-release-check.service"));
     assert!(timer.contains("WantedBy=timers.target"));
 
     let entry = background::autostart_entry(Path::new(APPIMAGE));
-    assert!(entry.contains("Exec=\"/run/media/me/Extra Volume/Anix.AppImage\" --background\n"));
+    assert!(entry.contains("Exec=\"/run/media/me/Extra Volume/Kozein.AppImage\" --background\n"));
     assert!(entry.contains("NoDisplay=true"));
 
     assert_eq!(background::quote_systemd_arg("/usr/bin/anix"), "/usr/bin/anix");
@@ -506,9 +506,9 @@ fn background_switch_writes_and_removes_its_files() {
     let exec = Path::new(APPIMAGE);
     let (service, timer) = background::unit_paths(&dir.0);
     let entry = background::autostart_path(&dir.0);
-    assert!(service.ends_with("systemd/user/anix-release-check.service"));
-    assert!(timer.ends_with("systemd/user/anix-release-check.timer"));
-    assert!(entry.ends_with("autostart/anix-release-check.desktop"));
+    assert!(service.ends_with("systemd/user/kozein-release-check.service"));
+    assert!(timer.ends_with("systemd/user/kozein-release-check.timer"));
+    assert!(entry.ends_with("autostart/kozein-release-check.desktop"));
 
     // On with systemd: the two units, and they changed.
     assert!(background::install_files(&dir.0, Some(exec), background::Starter::SystemdTimer).unwrap());
@@ -529,7 +529,7 @@ fn background_switch_writes_and_removes_its_files() {
     assert!(!entry.exists() && !service.exists() && !timer.exists());
     assert!(!background::is_installed(&dir.0));
 
-    // A file of the same name that Anix did not write is left alone.
+    // A file of the same name that Kozein did not write is left alone.
     std::fs::create_dir_all(entry.parent().unwrap()).unwrap();
     std::fs::write(&entry, "[Desktop Entry]\nExec=mine\n").unwrap();
     assert!(background::install_files(&dir.0, Some(exec), background::Starter::Autostart).is_err());
@@ -661,7 +661,7 @@ fn the_route_to_reopen_comes_from_the_hash_route_of_the_page() {
 fn a_restart_drops_the_minimised_background_and_link_arguments_but_keeps_other_flags() {
     use std::ffi::OsString;
     let args: Vec<OsString> = [
-        "/opt/Anix.AppImage",
+        "/opt/Kozein.AppImage",
         "--minimized",
         "--web-player",
         "anix://anime/123",
@@ -672,7 +672,7 @@ fn a_restart_drops_the_minimised_background_and_link_arguments_but_keeps_other_f
     .iter()
     .map(OsString::from)
     .collect();
-    let kept: Vec<OsString> = ["/opt/Anix.AppImage", "--web-player", "--verbose"].iter().map(OsString::from).collect();
+    let kept: Vec<OsString> = ["/opt/Kozein.AppImage", "--web-player", "--verbose"].iter().map(OsString::from).collect();
     assert_eq!(anix_lib::system::restart_args(&args), kept);
 }
 
@@ -709,36 +709,36 @@ use anix_lib::system::url_handler;
 
 #[test]
 fn the_link_handler_entry_opens_both_schemes_with_the_appimage() {
-    let entry = url_handler::handler_entry(Path::new("/home/x/Apps/Anix 1.3.AppImage")).unwrap();
+    let entry = url_handler::handler_entry(Path::new("/home/x/Apps/Kozein 1.3.AppImage")).unwrap();
     assert!(entry.starts_with("[Desktop Entry]\n"));
-    assert!(entry.contains("\nExec=\"/home/x/Apps/Anix 1.3.AppImage\" %u\n"), "{entry}");
-    assert!(entry.contains("\nMimeType=x-scheme-handler/anix;x-scheme-handler/anilili;\n"));
+    assert!(entry.contains("\nExec=\"/home/x/Apps/Kozein 1.3.AppImage\" %u\n"), "{entry}");
+    assert!(entry.contains("\nMimeType=x-scheme-handler/kozein;x-scheme-handler/anix;x-scheme-handler/anilili;\n"));
     assert!(entry.contains("\nNoDisplay=true\n"));
-    assert!(entry.contains("\nX-Anix-AppImage=/home/x/Apps/Anix 1.3.AppImage\n"));
+    assert!(entry.contains("\nX-Kozein-AppImage=/home/x/Apps/Kozein 1.3.AppImage\n"));
     // A line break in the path would add keys of its own to the file.
     assert!(url_handler::handler_entry(Path::new("/tmp/a\nExec=evil")).is_none());
     // A path that is not UTF-8 would be recorded mangled, never match, and be rewritten on
     // every start.
     use std::os::unix::ffi::OsStrExt;
-    let not_utf8 = Path::new(std::ffi::OsStr::from_bytes(b"/apps/Anix-\xff.AppImage"));
+    let not_utf8 = Path::new(std::ffi::OsStr::from_bytes(b"/apps/Kozein-\xff.AppImage"));
     assert!(url_handler::handler_entry(not_utf8).is_none());
 }
 
 #[test]
 fn the_link_handler_is_written_once_and_again_only_when_its_appimage_is_gone() {
-    let ours = url_handler::handler_entry(Path::new("/apps/Anix.AppImage")).unwrap();
-    let exists = |p: &Path| p == Path::new("/apps/Anix.AppImage");
+    let ours = url_handler::handler_entry(Path::new("/apps/Kozein.AppImage")).unwrap();
+    let exists = |p: &Path| p == Path::new("/apps/Kozein.AppImage");
     assert!(url_handler::needs_writing(None, exists), "first run");
     assert!(!url_handler::needs_writing(Some(&ours), exists), "ours, still pointing at a real file");
     assert!(url_handler::needs_writing(Some(&ours), |_| false), "ours, but the AppImage was moved or deleted");
     let hand_made = "[Desktop Entry]\nType=Application\nExec=/opt/other %u\nMimeType=x-scheme-handler/anix;\n";
-    assert!(!url_handler::needs_writing(Some(hand_made), |_| false), "a file Anix did not write is never touched");
+    assert!(!url_handler::needs_writing(Some(hand_made), |_| false), "a file Kozein did not write is never touched");
 }
 
 #[test]
 fn registering_the_link_handler_writes_into_the_data_home_once() {
     let data_home = TempDir::new("url-handler");
-    let appimage = data_home.0.join("Anix.AppImage");
+    let appimage = data_home.0.join("Kozein.AppImage");
     std::fs::write(&appimage, b"").unwrap();
 
     assert!(url_handler::register(&data_home.0, &appimage).unwrap(), "written on the first run");
@@ -749,10 +749,10 @@ fn registering_the_link_handler_writes_into_the_data_home_once() {
     assert!(!url_handler::register(&data_home.0, &appimage).unwrap(), "left alone on later runs");
 
     // The AppImage moved: the next run points the handler at the new place.
-    let moved = data_home.0.join("Anix-moved.AppImage");
+    let moved = data_home.0.join("Kozein-moved.AppImage");
     std::fs::rename(&appimage, &moved).unwrap();
     assert!(url_handler::register(&data_home.0, &moved).unwrap());
-    assert!(std::fs::read_to_string(&path).unwrap().contains("Anix-moved.AppImage"));
+    assert!(std::fs::read_to_string(&path).unwrap().contains("Kozein-moved.AppImage"));
 
     // A hand-made file of the same name stays as it is.
     std::fs::write(&path, "[Desktop Entry]\nExec=/opt/mine %u\n").unwrap();

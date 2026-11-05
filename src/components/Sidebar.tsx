@@ -12,6 +12,7 @@ import {
   HelpCircle,
   Bell,
   Download,
+  BookOpen,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import clsx from 'clsx';
@@ -45,7 +46,7 @@ const SidebarLink: React.FC<{
   to: string;
   icon: LucideIcon;
   label: string;
-  spot: MemeSpot;
+  spot?: MemeSpot;
   expanded: boolean;
   /** A count shown on the item (unread, in progress, …); hidden at 0. */
   badge?: number;
@@ -53,7 +54,7 @@ const SidebarLink: React.FC<{
   badgeLabel?: string;
 }> = ({ to, icon: Icon, label, spot, expanded, badge = 0, badgeLabel = '' }) => {
   const memeText = useMemeText();
-  const tip = memeText(spot, label);
+  const tip = spot ? memeText(spot, label) : label;
   return (
     <NavLink
       to={to}
@@ -69,7 +70,7 @@ const SidebarLink: React.FC<{
       <Icon aria-hidden="true" className="h-5 w-5 flex-shrink-0" />
       {expanded && (
         <span className="flex-1 truncate">
-          <Meme spot={spot} plain={label} />
+          {spot ? <Meme spot={spot} plain={label} /> : label}
         </span>
       )}
       {badge > 0 && (
@@ -148,6 +149,7 @@ export const Sidebar: React.FC = () => {
         {NAV_ITEMS.map(({ labelKey, ...item }) => (
           <SidebarLink key={item.to} {...item} label={t(labelKey)} expanded={expanded} />
         ))}
+        <SidebarLink to="/reading" icon={BookOpen} label={t('reading.title')} expanded={expanded} />
         <SidebarLink
           to="/downloads"
           icon={Download}

@@ -245,13 +245,13 @@ fn second_subtitle_track_and_position() {
 #[test]
 fn a_restart_drops_the_dmabuf_switch_anix_set_itself() {
     use anix_lib::system::hwaccel::{dmabuf_env, DmabufEnv};
-    // Fresh start, web player: Anix turns the renderer off and marks the value as its own.
+    // Fresh start, web player: Kozein turns the renderer off and marks the value as its own.
     assert_eq!(dmabuf_env(None, None, false), DmabufEnv::Disable);
     // Fresh start, mpv: the renderer stays on.
     assert_eq!(dmabuf_env(None, None, true), DmabufEnv::Untouched);
-    // "Restart now" (web → mpv) inherits Anix's own value: it is removed again.
+    // "Restart now" (web → mpv) inherits Kozein's own value: it is removed again.
     assert_eq!(dmabuf_env(Some("1"), Some("1"), true), DmabufEnv::Clear);
-    // A restart that stays on the web player keeps it off, still as Anix's own.
+    // A restart that stays on the web player keeps it off, still as Kozein's own.
     assert_eq!(dmabuf_env(Some("1"), Some("1"), false), DmabufEnv::Disable);
     // A value the user set is never touched, with or without a stray mark.
     assert_eq!(dmabuf_env(Some("1"), None, true), DmabufEnv::User);
@@ -291,7 +291,7 @@ fn a_web_playback_marker_counts_only_when_its_owner_is_gone() {
     use policy::marker_owner_gone as gone;
     const ME: u32 = 500;
     let alive = |pid: u32| pid == 42 || pid == ME;
-    // A second launch while Anix plays: the marker belongs to the running instance, keep it.
+    // A second launch while Kozein plays: the marker belongs to the running instance, keep it.
     assert!(!gone("42", ME, alive));
     assert!(!gone("42\n", ME, alive));
     // Its owner died with the web player playing: a crash.
@@ -319,7 +319,7 @@ fn only_a_user_value_that_turns_the_dmabuf_renderer_off_blocks_mpv() {
     assert!(off(Some("yes"), None));
     // "0" keeps the renderer on, which embedded mpv needs (install() accepts it too).
     assert!(!off(Some("0"), None));
-    // Unset, or Anix's own value from an earlier run.
+    // Unset, or Kozein's own value from an earlier run.
     assert!(!off(None, None));
     assert!(!off(Some("1"), Some("1")));
 }

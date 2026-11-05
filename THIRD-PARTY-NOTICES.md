@@ -78,3 +78,10 @@ Anix uses open-source components. Components under licences that ask for a notic
 - Fate/stay night: Unlimited Blade Works Abridged lines: Project Mouthwash (fan parody series).
 - Sources: Know Your Meme, Tenor and each series’ fan wiki. Each image’s source address and credit are in `memes/manifest.json` inside `assets/memes.zip`.
 - Series quoted in meme lines only, with no image: Bleach, Attack on Titan, One Punch Man, Jujutsu Kaisen, Sailor Moon, Detective Conan, Frieren, Dandadan, Mob Psycho 100, Chainsaw Man, Cowboy Bebop, Evangelion, Hunter x Hunter, Fullmetal Alchemist, Kaguya-sama, Komi Can’t Communicate, Monogatari, Haruhi Suzumiya, The Eminence in Shadow.
+
+## Kozein
+
+The Linux code is derived from Anix by MaidLover69 (MIT), pinned in UPSTREAMS.json.
+Weebox 1.1.0 is a feature reference only. No Weebox application binaries, branding, certificates or unavailable source code are redistributed.
+New Kozein code and the Kozein SVG mark are licensed under MIT.
+Browser metadata comes from Jikan/MyAnimeList; catalogue text and cover images remain the property of their respective owners.

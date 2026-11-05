@@ -150,11 +150,11 @@ fn from_proxy(url: &str, proxy_base: &str) -> Result<(), String> {
     if allowed {
         Ok(())
     } else {
-        Err("Only streams from the Anix stream proxy can be played".to_string())
+        Err("Only streams from the Kozein stream proxy can be played".to_string())
     }
 }
 
-/// The libmpv calls for `action`. Loads are only allowed from Anix's own stream proxy, which
+/// The libmpv calls for `action`. Loads are only allowed from Kozein's own stream proxy, which
 /// is also how local files are served.
 pub fn plan(action: &Action, proxy_base: &str) -> Result<Vec<Op>, String> {
     use Op::{Command, Set};
@@ -517,7 +517,7 @@ fn decision() -> &'static Start {
 fn forced_web() -> Option<String> {
     let args: Vec<String> = std::env::args().collect();
     policy::forced_web(&args, std::env::var("ANIX_PLAYER_ENGINE").ok().as_deref())
-        .or_else(|| crate::system::safe_mode::active().then(|| "Anix started in safe mode.".to_string()))
+        .or_else(|| crate::system::safe_mode::active().then(|| "Kozein started in safe mode.".to_string()))
 }
 
 fn web_playback_marker() -> Option<PathBuf> {
@@ -552,7 +552,7 @@ fn take_web_playback() -> bool {
     web_playback_marker().is_some_and(|path| std::fs::remove_file(path).is_ok())
 }
 
-/// At startup: whether an Anix that is gone now died while the web player played; removes that
+/// At startup: whether an Kozein that is gone now died while the web player played; removes that
 /// marker. A marker whose owner still runs is left alone: this start is a second launch (the
 /// launcher, an `anix://` link) that hands over to the running instance and exits.
 fn take_stale_web_playback() -> bool {
@@ -582,7 +582,7 @@ fn switch_to_mpv_after_crash(forced_web: bool) -> bool {
         return false;
     }
     update_state(policy::auto_switched_to_mpv);
-    tracing::warn!("The web player crashed during playback; Anix switches to embedded mpv");
+    tracing::warn!("The web player crashed during playback; Kozein switches to embedded mpv");
     true
 }
 
@@ -655,7 +655,7 @@ pub fn install(app: &AppHandle) {
     }
     if CRASH_SWITCH_NOTICE.swap(false, Ordering::SeqCst) {
         // The switch itself happened before logging started; this is its record in anix.log.
-        tracing::warn!("The app stopped during web playback last time; Anix switched to embedded mpv");
+        tracing::warn!("The app stopped during web playback last time; Kozein switched to embedded mpv");
         post_crash_switch_notice(app);
     }
     match decision() {
@@ -678,7 +678,7 @@ pub fn install(app: &AppHandle) {
 }
 
 /// Embedded mpv failed after this run kept WebKit's DMA-BUF renderer on for it. Later starts use
-/// the web player (Settings shows why); when Anix itself kept the renderer on, it restarts now
+/// the web player (Settings shows why); when Kozein itself kept the renderer on, it restarts now
 /// with it off, since on some drivers the window stays blank with it on.
 fn give_up(error: String) {
     ASK.store(false, Ordering::SeqCst);
@@ -686,7 +686,7 @@ fn give_up(error: String) {
     if let Err(e) = set_engine_setting("web") {
         return tracing::warn!("The player engine could not be set back to web: {}", e);
     }
-    let reason = format!("Embedded mpv could not start, so Anix went back to the web player: {}", error);
+    let reason = format!("Embedded mpv could not start, so Kozein went back to the web player: {}", error);
     update_state(move |mut s| {
         s.trial = false;
         s.reason = Some(reason);
@@ -1085,7 +1085,7 @@ pub async fn embedded_mpv_engine_changed(engine: String) {
     update_state(|s| policy::engine_changed(s, &engine));
 }
 
-/// Restarts Anix and reopens `route` (an in-app path) once it is back.
+/// Restarts Kozein and reopens `route` (an in-app path) once it is back.
 #[tauri::command]
 pub async fn embedded_mpv_restart(route: Option<String>) -> Result<(), String> {
     let route = route.filter(|r| policy::valid_route(r));
@@ -1102,7 +1102,7 @@ pub async fn web_player_active(active: bool) {
     set_web_playback(active);
 }
 
-/// The route to reopen after a restart Anix asked for, handed out once.
+/// The route to reopen after a restart Kozein asked for, handed out once.
 #[tauri::command]
 pub async fn embedded_mpv_take_route() -> Option<String> {
     let mut route = None;

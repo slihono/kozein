@@ -1,5 +1,5 @@
 //! The hidden hardware decoding self-test: a second mpv with full GL interop (`hwdec=auto-safe`)
-//! decodes a tiny clip of four colour bands (`resources/hwdec-selftest.mp4`, made for Anix)
+//! decodes a tiny clip of four colour bands (`resources/hwdec-selftest.mp4`, made for Kozein)
 //! into an offscreen framebuffer of the player's own GL context while nothing plays, and the
 //! read-back pixels must show those colours. Only then does "Automatic" use full interop.
 //! Everything here runs on the GTK main thread.

@@ -20,7 +20,7 @@ export function parseAnimeId(text: string | null | undefined): number | null {
 
 /** `anix://anime/<id>` (or the older `anilili://…`) → the id, or null for anything else. */
 export function parseDeepLink(url: string): number | null {
-  const match = url.trim().match(/^(?:anix|anilili):\/\/anime\/([^/?#]+)\/?(?:[?#].*)?$/i);
+  const match = url.trim().match(/^(?:kozein|anix|anilili):\/\/anime\/([^/?#]+)\/?(?:[?#].*)?$/i);
   return match ? parseAnimeId(match[1]) : null;
 }
 

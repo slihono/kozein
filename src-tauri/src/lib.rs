@@ -186,7 +186,7 @@ pub fn run() {
                     let text = crate::i18n::text(crate::i18n::current(), "db_open_failed");
                     app.dialog()
                         .message(format!("{}\n\n{}", text, e))
-                        .title("Anix")
+                        .title("Kozein")
                         .kind(MessageDialogKind::Error)
                         .show(move |_| handle.exit(1));
                 }

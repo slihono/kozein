@@ -72,9 +72,9 @@ fn ensure_dir(path: Option<PathBuf>, what: &str) -> Result<PathBuf, AppError> {
 }
 
 /// The name of the app's folder in the data, config and cache directories.
-pub const APP_DIR_NAME: &str = "anix";
+pub const APP_DIR_NAME: &str = "kozein";
 /// What that folder was called before the app was renamed; see `migration`.
-pub const LEGACY_APP_DIR_NAME: &str = "anilili";
+pub const LEGACY_APP_DIR_NAME: &str = "kozein-legacy";
 pub const DB_FILE_NAME: &str = "anix.db";
 /// What the database file was called before the app was renamed. `migration` renames it; it is
 /// still opened under this name if that did not work.

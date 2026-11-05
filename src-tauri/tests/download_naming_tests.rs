@@ -626,7 +626,7 @@ fn a_folder_that_cannot_be_written_is_refused_with_a_reason() {
     // root writes anywhere, so the refusal can only be seen as a normal user.
     if unsafe { libc::geteuid() } != 0 {
         let message = check_writable_dir(&locked).unwrap_err();
-        assert!(message.starts_with("Anix cannot save downloads in"), "{}", message);
+        assert!(message.starts_with("Kozein cannot save downloads in"), "{}", message);
         assert!(message.contains("Choose another folder"), "{}", message);
     }
     std::fs::set_permissions(&locked, std::fs::Permissions::from_mode(0o755)).unwrap();

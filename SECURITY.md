@@ -1,55 +1,9 @@
-# Security Policy
+# Security — Kozein
 
-## Supported versions
+Report Kozein vulnerabilities through this repository’s private vulnerability reporting feature when it is enabled. Do not include passwords, tokens, private media, personal paths or full settings files in public issues. If private reporting is unavailable, open a minimal issue asking the maintainer for a private channel.
 
-Only the latest release gets security fixes. Update first and check whether the problem is still there.
+Kozein preserves Anix’s sandboxed extension runtime, loopback proxy guards, redacted account settings and dynamically replaceable LGPL video libraries. Read `AGENTS.md` for the trust boundaries. The browser interface does not execute extensions and accepts only user-selected image/video files.
 
-| Version | Supported |
-| :--- | :--- |
-| 1.3.x (latest) | ✅ |
-| 1.2.x and older | ❌ |
+Native updates are disabled unless the distributor defines `KOZEIN_SITE_URL` at build time. Never configure an update source you do not control. Keep native distribution credentials outside version control.
 
-## Reporting a vulnerability
-
-**Please do not open a public issue for a security problem.**
-
-Report it privately with GitHub's [Report a vulnerability](https://github.com/MaidLover69/Anix/security/advisories/new)
-form (repository › **Security** › **Report a vulnerability**). Only the maintainer can see it.
-
-Please include:
-
-- the Anix version and how you installed it (AppImage, RPM, DEB or built from source);
-- your distribution and desktop;
-- what an attacker can do, and the steps or a small proof of concept that shows it;
-- whether it needs a malicious extension, a malicious website, or access to the computer.
-
-Do not include real account tokens, passwords or anyone's personal data. If logs are useful, use
-**Settings › System › Diagnostics report**, which removes logins, tokens, email addresses and your home folder.
-
-## What happens next
-
-This is a one-person project, so these are aims, not guarantees:
-
-- you get a reply within **7 days**;
-- once the problem is confirmed, a fix ships in the next release, as fast as its severity needs;
-- you are credited in the changelog, unless you would rather not be.
-
-Please give the fix time to ship before you publish details.
-
-## Scope
-
-**In scope:** the Anix app in this repository, for example:
-
-- the local stream proxy (`src-tauri/src/stream_proxy.rs`): access without its token, or use as an open proxy;
-- the extension sandbox: an extension reading files, starting programs, or reaching private or loopback addresses;
-- account tokens leaking to the page, logs, diagnostics reports or other files;
-- deep links (`anix://`), external players and file paths that run or open something they should not;
-- the update check accepting a file that does not match its checksum.
-
-**Not in scope:**
-
-- bugs in a third-party extension: report them to that extension's author. Problems in the
-  extensions maintained for Anix go to the [extensions repository](https://github.com/MaidLover69/Anix_plugins/issues).
-- the websites that extensions read from;
-- problems that need someone to already control your user account or computer;
-- requests to get around a website's anti-bot checks. Anix will not add that.
+No security audit of the complete inherited Rust engine is claimed by this distribution. Consult `verification/REPORT.md` for checks actually performed.

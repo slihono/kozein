@@ -1114,7 +1114,7 @@ pub async fn drive(
     loop {
         if !gate.may_check() {
             if !standing_by {
-                info!("Release notifications stand by: Anix is open and does the checking");
+                info!("Release notifications stand by: Kozein is open and does the checking");
                 standing_by = true;
             }
             tokio::time::sleep(Duration::from_secs(WATCH_TICK_S as u64)).await;
@@ -1170,7 +1170,7 @@ async fn show_test_notification(pool: &SqlitePool, sink: &dyn NotificationSink) 
         .and_then(|bells| bells.into_iter().next());
     let (media_id, title, cover_image) = match bell {
         Some(bell) => (bell.media_id, bell.media_title, bell.cover_image),
-        None => (0, "Anix test notification".to_string(), None),
+        None => (0, "Kozein test notification".to_string(), None),
     };
     sink.show(&ReleaseNotification {
         media_id,

@@ -170,7 +170,7 @@ pub fn get_download_dir() -> Result<PathBuf, AppError> {
 /// Refuses a folder downloads cannot be saved in: not absolute, not creatable, or not
 /// writable (checked by creating and removing a small file).
 pub fn check_writable_dir(dir: &Path) -> Result<(), String> {
-    let refuse = |why: String| Err(format!("Anix cannot save downloads in {}: {}. Choose another folder.", dir.display(), why));
+    let refuse = |why: String| Err(format!("Kozein cannot save downloads in {}: {}. Choose another folder.", dir.display(), why));
     if !dir.is_absolute() {
         return refuse("it is not a full path".to_string());
     }
@@ -290,7 +290,7 @@ pub fn output_base_name(series_title: &str, episode_num: f64, category: &str, qu
 }
 
 /// A short stable tag derived from the download id; it keeps the working files of two
-/// downloads of the same episode apart. SHA-256, so every Anix build computes the same tag
+/// downloads of the same episode apart. SHA-256, so every Kozein build computes the same tag
 /// and an update does not orphan the resumable files of queued downloads.
 pub fn work_tag(download_id: &str) -> String {
     use sha2::{Digest, Sha256};
