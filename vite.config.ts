@@ -1,11 +1,20 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { readFileSync } from 'node:fs';
 
 // @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;
 
 export default defineConfig(async () => ({
-  plugins: [react()],
+  plugins: [react(), {
+    name: 'kozein-distribution-notices',
+    apply: 'build',
+    generateBundle() {
+      for (const name of ['LICENSE', 'THIRD-PARTY-NOTICES.md', 'UPSTREAMS.json']) {
+        this.emitFile({ type: 'asset', fileName: name, source: readFileSync(new URL(name, import.meta.url)) });
+      }
+    },
+  }],
   base: './',
   clearScreen: false,
   server: {
