@@ -3,6 +3,7 @@ import { BookOpen, Bookmark, Check, ChevronRight, Compass, ExternalLink, Film, F
 import { Button } from './components/ui/Button';
 import { Modal } from './components/ui/Modal';
 import { WebStreaming } from './components/WebStreaming';
+import { WebComics } from './components/WebComics';
 import { Reading } from './screens/Reading';
 import { t, applyLanguageSetting, language, useLocale } from './i18n';
 import { applyTheme, currentTheme, THEMES, type ThemeId } from './theme/themes';
@@ -219,7 +220,11 @@ export const WebApp: React.FC = () => {
             })}</div>
           ) : !error && <div className="kozein-empty"><Bookmark size={36} aria-hidden="true" /><h2>{t(tab === 'library' ? 'web.libraryEmpty' : 'web.noResults')}</h2><p>{t(tab === 'library' ? 'web.libraryEmptyHint' : 'web.noResultsHint')}</p>{tab === 'library' && <Button onClick={() => navigate('discover')}>{t('web.discover')}</Button>}</div>}
         </>}
-        {tab === 'reading' && <Reading />}
+        {tab === 'reading' && <div className="flex flex-col gap-8">
+          <h1 className="text-2xl font-semibold">{t('reading.title')}</h1>
+          <WebComics />
+          <Reading embedded />
+        </div>}
         {tab === 'video' && <div className="flex flex-col gap-8"><WebStreaming initial={initialStream} /><LocalVideo /></div>}
         {tab === 'settings' && <div className="kozein-settings">
           <h1 className="text-2xl font-semibold">{t('web.settings')}</h1>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { Film, Link2, Play, X } from 'lucide-react';
+import { Film, Link2, ListVideo, Play, X } from 'lucide-react';
 import { Button } from './ui/Button';
 import { language, t } from '../i18n';
 import { officialEmbed, OFFICIAL_STREAMS, parseDirectStream, type DirectStream, type OfficialStream } from '../lib/webStreams';
@@ -64,6 +64,7 @@ type Playback = { official: OfficialStream } | { direct: DirectStream; attempt: 
 export function WebStreaming({ initial }: { initial: OfficialStream | null }) {
   const [playback, setPlayback] = useState<Playback | null>(() => initial ? { official: initial } : null);
   const [input, setInput] = useState('');
+  const [search, setSearch] = useState('');
   const [invalid, setInvalid] = useState(false);
   const playerSection = useRef<HTMLElement>(null);
   const selectionHeading = useRef<HTMLHeadingElement>(null);
@@ -81,6 +82,8 @@ export function WebStreaming({ initial }: { initial: OfficialStream | null }) {
   }, [playback]);
 
   const official = playback && 'official' in playback ? playback.official : null;
+  const query = search.trim().toLowerCase();
+  const streams = OFFICIAL_STREAMS.filter((stream) => stream.title.toLowerCase().includes(query));
 
   return <div className="flex flex-col gap-6">
     <header>
@@ -97,7 +100,7 @@ export function WebStreaming({ initial }: { initial: OfficialStream | null }) {
       </div>
       {'official' in playback ? <>
         <iframe
-          key={playback.official.videoId}
+          key={playback.official.format === 'playlist' ? playback.official.playlistId : playback.official.videoId}
           src={officialEmbed(playback.official, language())}
           title={t('stream.playerLabel', { title: playback.official.title })}
           referrerPolicy="strict-origin-when-cross-origin"
@@ -111,20 +114,32 @@ export function WebStreaming({ initial }: { initial: OfficialStream | null }) {
     <section aria-labelledby="kozein-official-streams">
       <h2 ref={selectionHeading} tabIndex={-1} id="kozein-official-streams" className="mb-1 text-lg font-semibold">{t('stream.selection')}</h2>
       <p className="mb-3 text-xs text-text-muted">{t('stream.provider')}</p>
+      <label className="mb-3 block text-sm">
+        <span className="sr-only">{t('stream.search')}</span>
+        <input
+          type="search"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder={t('stream.search')}
+          className="w-full max-w-sm rounded-md border border-border bg-bg-input px-3 py-2"
+        />
+      </label>
+      {streams.length === 0 && <p role="status" className="text-sm text-text-secondary">{t('stream.noResults')}</p>}
       <ul className="grid gap-2 sm:grid-cols-2">
-        {OFFICIAL_STREAMS.map((stream) => <li key={stream.videoId}>
+        {streams.map((stream) => <li key={stream.format === 'playlist' ? stream.playlistId : stream.videoId}>
           <button
             type="button"
-            aria-pressed={official?.videoId === stream.videoId}
+            aria-pressed={official === stream}
             onClick={() => setPlayback({ official: stream })}
             className="flex min-h-16 w-full items-center gap-3 rounded-lg border border-border bg-bg-card px-3 py-2 text-start hover:bg-bg-input focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent-400 aria-pressed:border-accent-400"
           >
             <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-bg-input text-accent-300">
-              {stream.format === 'film' ? <Film size={17} aria-hidden="true" /> : <Play size={17} aria-hidden="true" />}
+              {stream.format === 'playlist' ? <ListVideo size={17} aria-hidden="true" /> :
+                stream.format === 'film' ? <Film size={17} aria-hidden="true" /> : <Play size={17} aria-hidden="true" />}
             </span>
             <span className="min-w-0">
               <span className="block text-sm font-medium">{stream.title}</span>
-              <span className="text-xs text-text-muted">{t(stream.format === 'film' ? 'stream.film' : 'stream.episode')}</span>
+              <span className="text-xs text-text-muted">{t(`stream.${stream.format}`)}</span>
             </span>
           </button>
         </li>)}

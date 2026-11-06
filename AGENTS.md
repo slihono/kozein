@@ -14,9 +14,13 @@ Kozein includes a Linux desktop app for anime. It has:
 - downloads
 - a player (embedded libmpv, or a web player)
 
-Streaming sources are not built in. They come from **extensions**: JavaScript files the user adds
+In the desktop app, streaming sources come from **extensions**, JavaScript files the user adds
 from extension repositories (see [Extensions](#extensions)). The extensions live in a separate
 repository (`../plugins`, which has its own `AGENTS.md`).
+
+The browser app also embeds selected rights-holder playlists and videos from `src/lib/webStreams.ts`.
+Its online comics reader loads the original pages from `src/lib/webComics.ts` with their credits
+and licence. Keep the source and reuse terms verifiable when adding entries.
 
 - Version 1.0.0, identifier `io.kozein.app`, licence MIT.
 - Upstream extension directory: https://anix-linux.vercel.app. Kozein updates are disabled unless `KOZEIN_SITE_URL` is provided at compile time.

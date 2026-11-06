@@ -40,7 +40,9 @@ Sous Windows, `Lancer-Kozein.cmd` lance la version navigateur et affiche son adr
 
 Le lecteur manga accepte les pages JPEG, PNG, WebP, AVIF et GIF, triées naturellement par nom de fichier. Sélectionner toutes les pages d’un volume lors de l’import. Limites : 600 pages, 30 Mo et 80 millions de pixels par page, 350 Mo par volume. Les archives CBZ/CBR et PDF ne sont pas importées.
 
-Dans le navigateur, l’onglet **Lecteur vidéo** propose une sélection de vidéos du [programme officiel Gundam](https://fr.gundam-official.com/feature/gwoy/), lue dans un lecteur YouTube intégré. Le diffuseur décide de la disponibilité par pays et des sous-titres. Tu peux aussi ouvrir dans Kozein une adresse directe HTTPS vers un flux MP4, WebM ou HLS (.m3u8) que tu as le droit d’utiliser. Le serveur source doit autoriser les requêtes du navigateur pour la lecture HLS. Les liens directs restent en mémoire pendant la session du lecteur.
+Dans le navigateur, l’onglet **Lecteur vidéo** intègre des épisodes et des films du [programme officiel Gundam](https://fr.gundam-official.com/feature/gwoy/) et les listes d’épisodes publiées par [TMS Entertainment](https://tmsanime.com/anime-on-tms-official-channel). Le diffuseur décide de la disponibilité par pays et des sous-titres. Tu peux aussi ouvrir une adresse directe HTTPS vers un flux MP4, WebM ou HLS (.m3u8) que tu as le droit d’utiliser. Le serveur source doit autoriser les requêtes du navigateur pour la lecture HLS. Les liens directs restent en mémoire pendant la session du lecteur.
+
+L’onglet **Lecture** affiche les planches originales de [Pepper&Carrot](https://www.peppercarrot.com/fr/about/index.html) de David Revoy (CC BY 4.0) en français ou en anglais, et de [Ubunchu!](https://seotch.wordpress.com/ubunchu/) de Hiroshi Seo, publié par ASCII MEDIA WORKS Inc. (CC BY-NC 3.0, usage non commercial), en japonais. Le lecteur indique la licence, les crédits et la source de chaque chapitre.
 
 Les fichiers vidéo et les pages de manga importés pour une lecture locale restent sur ton appareil. La version navigateur fonctionne sur Windows, Android et iOS avec un navigateur compatible.
 

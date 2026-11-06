@@ -21,7 +21,7 @@ const BookCover: React.FC<{ book: ReadingBook }> = ({ book }) => {
   return <img src={url} alt="" className="aspect-[2/3] w-full rounded-lg bg-bg-elevated object-cover" loading="lazy" />;
 };
 
-export const Reading: React.FC = () => {
+export const Reading: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   const [books, setBooks] = useState<ReadingBook[]>([]);
   const [active, setActive] = useState<ReadingBook | null>(null);
   const [page, setPage] = useState(0);
@@ -32,6 +32,7 @@ export const Reading: React.FC = () => {
   const [removeId, setRemoveId] = useState<string | null>(null);
   const picker = useRef<HTMLInputElement>(null);
   const imageUrl = useBlobUrl(active?.pages[page]?.blob);
+  const Heading = embedded ? 'h2' : 'h1';
 
   const report = (err: unknown) => {
     const key = err instanceof Error ? err.message : '';
@@ -93,8 +94,8 @@ export const Reading: React.FC = () => {
     <div className="flex flex-col gap-6 pb-10">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-accent-300">{t('kozein.brand')}</p>
-          <h1 className="text-2xl font-semibold tracking-tight">{active?.title ?? t('reading.title')}</h1>
+          {!embedded && <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-accent-300">{t('kozein.brand')}</p>}
+          <Heading className="text-2xl font-semibold tracking-tight">{active?.title ?? t(embedded ? 'reading.onlineLocal' : 'reading.title')}</Heading>
           <p className="mt-1 max-w-2xl text-sm text-text-secondary">{t(active ? 'reading.shortcuts' : 'reading.hint')}</p>
         </div>
         {active ? (

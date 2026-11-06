@@ -5,6 +5,7 @@ import { orderedImages, readingPage, bookTitle, READING_LIMITS } from '../src/li
 import { safeCatalogueLink, storedWatchlist, webCatalogue, fetchCatalogue, catalogueDescription } from '../src/lib/webCatalogue.ts';
 import { parseDeepLink } from '../src/lib/routes.ts';
 import { officialEmbed, officialStreamFor, OFFICIAL_STREAMS, parseDirectStream } from '../src/lib/webStreams.ts';
+import { webComics } from '../src/lib/webComics.ts';
 
 test('official episodes resolve only for the curated catalogue titles', () => {
   assert.equal(officialStreamFor(49828)?.videoId, '2B_njMCRCvU');
@@ -14,9 +15,32 @@ test('official episodes resolve only for the curated catalogue titles', () => {
   for (const stream of OFFICIAL_STREAMS) {
     const embed = new URL(officialEmbed(stream, 'fr'));
     assert.equal(embed.origin, 'https://www.youtube-nocookie.com');
-    assert.match(embed.pathname, /^\/embed\/[a-zA-Z0-9_-]{11}$/);
+    if (stream.format === 'playlist') {
+      assert.equal(embed.pathname, '/embed/videoseries');
+      assert.equal(embed.searchParams.get('list'), stream.playlistId);
+      assert.match(stream.playlistId, /^PL[a-zA-Z0-9_-]{32}$/);
+    } else {
+      assert.match(embed.pathname, /^\/embed\/[a-zA-Z0-9_-]{11}$/);
+      assert.equal(embed.searchParams.has('list'), false);
+    }
     assert.equal(embed.searchParams.get('cc_lang_pref'), 'fr');
   }
+});
+
+test('licensed comics preserve source pages, credits and commercial-use terms', () => {
+  const [french, manga] = webComics('fr');
+  const [english] = webComics('en');
+  assert.equal(french.chapters.length, 39);
+  assert.equal(english.chapters.length, french.chapters.length);
+  assert.equal(french.chapters[0].title, "Potion d'envol");
+  assert.equal(english.chapters[0].title, 'The Potion of Flight');
+  assert.match(french.chapters[3].pages[5], /fr_Pepper-and-Carrot_by-David-Revoy_E04P05\.gif$/);
+  assert.match(english.chapters[27].pages[2], /en_Pepper-and-Carrot_by-David-Revoy_E28P02\.gif$/);
+  assert.equal(manga.chapters.length, 8);
+  assert.equal(manga.nonCommercial, true);
+  assert.equal(manga.license, 'CC BY-NC 3.0');
+  assert.match(manga.chapters[1].pages[0], /\/02\/ubunchu02_ja_release\/ubunchu01_00\.png$/);
+  assert.match(manga.chapters[7].pages[11], /\/08\/ubunchu08_ja-release\/ubunchu08_0011\.png$/);
 });
 
 test('direct playback accepts secure media links and rejects pages, credentials and active URLs', () => {
