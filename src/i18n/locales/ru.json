@@ -2305,5 +2305,22 @@
   "web.privacyText": "Watchlists, manga pages and playback positions are stored on this device. Clearing browser data removes them. Searches go to Jikan and, if unavailable, AniList; cover images load from their image hosts. No telemetry is added.",
   "web.footer": "A personal library, at your pace.",
   "web.skipContent": "Skip to content",
-  "commandPalette.navReadingHint": "Open your local manga and comics"
+  "commandPalette.navReadingHint": "Open your local manga and comics",
+  "stream.selection": "Official selection",
+  "stream.title": "Watch in Kozein",
+  "stream.intro": "Watch complete episodes and films from official channels in the built-in player.",
+  "stream.provider": "Gundam Channel INTL · YouTube",
+  "stream.watch": "Watch",
+  "stream.episode": "Full episode 1",
+  "stream.film": "Full film",
+  "stream.playerLabel": "Watch {title} in Kozein",
+  "stream.close": "Close player",
+  "stream.availability": "The broadcaster controls availability and subtitles by country.",
+  "stream.noSource": "There is no official stream for this title in Kozein’s selection yet.",
+  "stream.direct": "Direct video stream",
+  "stream.directHint": "Paste an HTTPS link to an MP4, WebM or HLS (.m3u8) stream you’re allowed to use.",
+  "stream.play": "Load stream",
+  "stream.invalid": "Enter a direct HTTPS link to an MP4, WebM or HLS video.",
+  "stream.playbackError": "This stream couldn’t play. Check that the link works, the source allows playback in your browser and the format is supported.",
+  "stream.local": "Videos on this device"
 }

@@ -40,7 +40,9 @@ Sous Windows, `Lancer-Kozein.cmd` lance la version navigateur et affiche son adr
 
 Le lecteur manga accepte les pages JPEG, PNG, WebP, AVIF et GIF, triées naturellement par nom de fichier. Sélectionner toutes les pages d’un volume lors de l’import. Limites : 600 pages, 30 Mo et 80 millions de pixels par page, 350 Mo par volume. Les archives CBZ/CBR et PDF ne sont pas importées.
 
-La version navigateur n’installe pas de sources vidéo et ne simule pas une connexion aux comptes. Aucune compilation Windows `.exe`, APK Android ou version iPhone n’est fournie dans cette version.
+Dans le navigateur, l’onglet **Lecteur vidéo** propose une sélection de vidéos du [programme officiel Gundam](https://fr.gundam-official.com/feature/gwoy/), lue dans un lecteur YouTube intégré. Le diffuseur décide de la disponibilité par pays et des sous-titres. Tu peux aussi ouvrir dans Kozein une adresse directe HTTPS vers un flux MP4, WebM ou HLS (.m3u8) que tu as le droit d’utiliser. Le serveur source doit autoriser les requêtes du navigateur pour la lecture HLS. Les liens directs restent en mémoire pendant la session du lecteur.
+
+Les fichiers vidéo et les pages de manga importés pour une lecture locale restent sur ton appareil. La version navigateur fonctionne sur Windows, Android et iOS avec un navigateur compatible.
 
 ## Application Linux
 

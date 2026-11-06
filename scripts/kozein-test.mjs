@@ -4,6 +4,34 @@ import fs from 'node:fs';
 import { orderedImages, readingPage, bookTitle, READING_LIMITS } from '../src/lib/reading.ts';
 import { safeCatalogueLink, storedWatchlist, webCatalogue, fetchCatalogue, catalogueDescription } from '../src/lib/webCatalogue.ts';
 import { parseDeepLink } from '../src/lib/routes.ts';
+import { officialEmbed, officialStreamFor, OFFICIAL_STREAMS, parseDirectStream } from '../src/lib/webStreams.ts';
+
+test('official episodes resolve only for the curated catalogue titles', () => {
+  assert.equal(officialStreamFor(49828)?.videoId, '2B_njMCRCvU');
+  assert.equal(officialStreamFor(32792)?.videoId, '9isbRbLD2GE');
+  assert.equal(officialStreamFor(52168), undefined);
+  assert.equal(officialStreamFor(16498), undefined);
+  for (const stream of OFFICIAL_STREAMS) {
+    const embed = new URL(officialEmbed(stream, 'fr'));
+    assert.equal(embed.origin, 'https://www.youtube-nocookie.com');
+    assert.match(embed.pathname, /^\/embed\/[a-zA-Z0-9_-]{11}$/);
+    assert.equal(embed.searchParams.get('cc_lang_pref'), 'fr');
+  }
+});
+
+test('direct playback accepts secure media links and rejects pages, credentials and active URLs', () => {
+  assert.deepEqual(parseDirectStream(' https://media.example/episode.MP4?quality=hd '), {
+    url: 'https://media.example/episode.MP4?quality=hd', hls: false,
+  });
+  assert.deepEqual(parseDirectStream('https://media.example/live/master.m3u8'), {
+    url: 'https://media.example/live/master.m3u8', hls: true,
+  });
+  for (const input of [
+    'http://media.example/episode.mp4', 'file:///episode.mp4', 'javascript:alert(1)',
+    '//media.example/episode.mp4', 'https://user:pass@media.example/episode.mp4',
+    'https://example.com/watch?video=episode.mp4', 'https://example.com/episode.mp4/index.html',
+  ]) assert.equal(parseDirectStream(input), null);
+});
 
 test('reading sorts page numbers naturally without mutating the selection', () => {
   const files = [10, 2, 1].map((n) => ({ name: `volume-${n}.png`, type: 'image/png', size: 20 }));

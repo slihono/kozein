@@ -26,6 +26,7 @@ repository (`../plugins`, which has its own `AGENTS.md`).
 ## Kozein additions
 
 - `src/main.tsx` loads the native `App` only in Tauri; ordinary browsers load `WebApp` with real Jikan requests and local storage. Never simulate native commands in browser mode.
+- In the browser player, `src/lib/webStreams.ts` associates official broadcaster videos with catalogue IDs. `WebStreaming` embeds the official player and opens user-entered HTTPS media URLs in the browser. Keep those URLs out of storage, logs and backend commands.
 - `src/screens/Reading.tsx` is shared by both interfaces. Images and reading positions live in IndexedDB (`kozein-reading`), separately from SQLite backups.
 - `src/lib/reading.ts` validates image types, count and byte limits; the UI also decodes images before saving. Keep rejection tests in `scripts/kozein-test.mjs`.
 - New Kozein interface text has French and English translations; other locale files retain the English text for new keys. Do not lose inherited translations.

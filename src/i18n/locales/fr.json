@@ -2223,5 +2223,22 @@
   "web.privacyText": "Les listes, pages de manga et positions vidéo restent sur cet appareil. Effacer les données du navigateur les supprime. Les recherches sont envoyées à Jikan puis, en cas de panne, à AniList ; les couvertures proviennent de leurs hébergeurs d’images. Aucune télémétrie ajoutée.",
   "web.footer": "Une bibliothèque personnelle, à ton rythme.",
   "web.skipContent": "Aller au contenu",
-  "commandPalette.navReadingHint": "Ouvrir tes mangas et BD locaux"
+  "commandPalette.navReadingHint": "Ouvrir tes mangas et BD locaux",
+  "stream.selection": "Sélection officielle",
+  "stream.title": "Regarder dans Kozein",
+  "stream.intro": "Regarde des épisodes et films complets de chaînes officielles dans le lecteur intégré.",
+  "stream.provider": "Gundam Channel INTL · YouTube",
+  "stream.watch": "Regarder",
+  "stream.episode": "Épisode 1 intégral",
+  "stream.film": "Film intégral",
+  "stream.playerLabel": "Regarder {title} dans Kozein",
+  "stream.close": "Fermer le lecteur",
+  "stream.availability": "Les titres et les sous-titres disponibles dépendent du diffuseur et de ton pays.",
+  "stream.noSource": "Ce titre n’a pas encore de flux officiel dans la sélection Kozein.",
+  "stream.direct": "Flux vidéo direct",
+  "stream.directHint": "Colle une adresse HTTPS vers un flux MP4, WebM ou HLS (.m3u8) que tu as le droit d’utiliser.",
+  "stream.play": "Charger le flux",
+  "stream.invalid": "Saisis une adresse HTTPS directe vers une vidéo MP4, WebM ou HLS.",
+  "stream.playbackError": "La lecture a échoué. Vérifie que le lien est actif, que la source autorise la lecture dans ton navigateur et que le format est compatible.",
+  "stream.local": "Vidéos sur cet appareil"
 }

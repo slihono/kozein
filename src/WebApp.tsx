@@ -2,10 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { BookOpen, Bookmark, Check, ChevronRight, Compass, ExternalLink, Film, FolderOpen, Play, Plus, Search, Settings, Share2, Star, X } from 'lucide-react';
 import { Button } from './components/ui/Button';
 import { Modal } from './components/ui/Modal';
+import { WebStreaming } from './components/WebStreaming';
 import { Reading } from './screens/Reading';
 import { t, applyLanguageSetting, language, useLocale } from './i18n';
 import { applyTheme, currentTheme, THEMES, type ThemeId } from './theme/themes';
 import { safeCatalogueLink, storedWatchlist, fetchCatalogue, type CatalogueTitle } from './lib/webCatalogue';
+import { officialStreamFor, type OfficialStream } from './lib/webStreams';
 import './theme/kozein.css';
 
 type Tab = 'discover' | 'library' | 'reading' | 'video' | 'settings';
@@ -42,7 +44,7 @@ const LocalVideo: React.FC = () => {
 
   return <div className="flex flex-col gap-5">
     <div className="flex flex-wrap items-center justify-between gap-3">
-      <div><h1 className="text-2xl font-semibold">{t('web.video')}</h1><p className="mt-2 text-sm text-text-secondary">{t('web.videoHint')}</p></div>
+      <div><h2 className="text-xl font-semibold">{t('stream.local')}</h2><p className="mt-2 text-sm text-text-secondary">{t('web.videoHint')}</p></div>
       <Button variant="primary" onClick={() => picker.current?.click()}><FolderOpen size={16} />{t('web.openVideo')}</Button>
       <input type="file" ref={picker} accept="video/*,.mkv" className="hidden" aria-label={t('web.openVideo')} onChange={(event) => {
         save(); setError(''); setFile(event.target.files?.[0] ?? null); event.target.value = '';
@@ -50,7 +52,7 @@ const LocalVideo: React.FC = () => {
     </div>
     {error && <p role="alert" className="text-state-error">{error}</p>}
     {file ? <>
-      <h2 className="break-words text-sm text-text-secondary">{file.name}</h2>
+      <h3 className="break-words text-sm text-text-secondary">{file.name}</h3>
       <video key={url} ref={video} src={url} controls playsInline className="max-h-[70vh] w-full rounded-xl bg-bg-deepest"
         onLoadedMetadata={() => {
           try {
@@ -62,7 +64,7 @@ const LocalVideo: React.FC = () => {
         onTimeUpdate={() => { if (Date.now() - lastSaved.current > 5000) { save(); lastSaved.current = Date.now(); } }}
         onPause={save} onEnded={save} onError={() => setError(t('web.videoError'))} />
     </> : <div className="kozein-empty">
-      <Film size={42} aria-hidden="true" /><h2>{t('web.videoEmpty')}</h2><p>{t('web.videoHint')}</p>
+      <Film size={42} aria-hidden="true" /><h3 className="text-lg font-semibold">{t('web.videoEmpty')}</h3><p>{t('web.videoHint')}</p>
       <Button onClick={() => picker.current?.click()}><Plus size={16} />{t('web.openVideo')}</Button>
     </div>}
   </div>;
@@ -74,6 +76,7 @@ export const WebApp: React.FC = () => {
   const [query, setQuery] = useState('');
   const [titles, setTitles] = useState<CatalogueTitle[]>([]);
   const [selected, setSelected] = useState<CatalogueTitle | null>(null);
+  const [initialStream, setInitialStream] = useState<OfficialStream | null>(null);
   const [list, setList] = useState<CatalogueTitle[]>(() => {
     try { return storedWatchlist(localStorage.getItem(LIST_KEY)); }
     catch { return []; }
@@ -88,7 +91,13 @@ export const WebApp: React.FC = () => {
   const headingRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const change = () => { setTab(currentTab()); setSelected(null); setNotice(''); };
+    const change = () => {
+      const next = currentTab();
+      setTab(next);
+      setSelected(null);
+      setNotice('');
+      if (next !== 'video') setInitialStream(null);
+    };
     window.addEventListener('hashchange', change);
     return () => window.removeEventListener('hashchange', change);
   }, []);
@@ -120,6 +129,11 @@ export const WebApp: React.FC = () => {
   }, [query, retry, tab]);
 
   const navigate = (next: Tab) => { location.hash = `/${next}`; setTab(next); };
+  const watch = (stream: OfficialStream) => {
+    setInitialStream(stream);
+    setSelected(null);
+    navigate('video');
+  };
   const toggleList = (title: CatalogueTitle) => {
     const exists = list.some((item) => item.id === title.id);
     const next = exists ? list.filter((item) => item.id !== title.id) : [title, ...list];
@@ -131,6 +145,7 @@ export const WebApp: React.FC = () => {
 
   const cards = tab === 'library' ? list : titles;
   const selectedSaved = selected ? list.some((item) => item.id === selected.id) : false;
+  const selectedStream = selected ? officialStreamFor(selected.id) : undefined;
 
   return <div className="kozein-app">
     <a href="#kozein-main" className="kozein-skip">{t('web.skipContent')}</a>
@@ -143,7 +158,7 @@ export const WebApp: React.FC = () => {
       <nav aria-label={t('sidebar.mainNav')}>
         {TABS.map((item) => {
           const Icon = ICONS[item];
-          return <a href={`#/${item}`} key={item} aria-current={tab === item ? 'page' : undefined} className={tab === item ? 'active' : ''}>
+          return <a href={`#/${item}`} key={item} aria-label={t(`web.${item}`)} aria-current={tab === item ? 'page' : undefined} className={tab === item ? 'active' : ''}>
             <Icon size={19} aria-hidden="true" /><span>{t(`web.${item}`)}</span>{item === 'library' && list.length > 0 && <small>{list.length}</small>}
           </a>;
         })}
@@ -170,7 +185,7 @@ export const WebApp: React.FC = () => {
               <h1>{t('web.welcome')}</h1>
               <p>{t('web.welcomeHint')}</p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Button variant="primary" onClick={() => navigate('video')}><Play size={15} aria-hidden="true" />{t('web.openVideo')}</Button>
+                <Button variant="primary" onClick={() => navigate('video')}><Play size={15} aria-hidden="true" />{t('stream.watch')}</Button>
                 <Button variant="neutral" onClick={() => navigate('reading')}><BookOpen size={16} aria-hidden="true" />{t('reading.title')}</Button>
               </div>
             </div>
@@ -187,6 +202,7 @@ export const WebApp: React.FC = () => {
           {loading && tab === 'discover' ? <div role="status" aria-label={t('common.loading')} className="kozein-grid">{Array.from({ length: 12 }, (_, index) => <div key={index} className="kozein-skeleton motion-safe:animate-pulse" />)}</div> : cards.length ? (
             <div className="kozein-grid">{cards.map((title) => {
               const saved = list.some((item) => item.id === title.id);
+              const stream = officialStreamFor(title.id);
               return <article className="kozein-card" key={title.id}>
                 <button className="kozein-cover" onClick={() => setSelected(title)} aria-label={t('web.details', { title: title.title })}>
                   <img src={title.cover} alt="" loading="lazy" />
@@ -196,12 +212,15 @@ export const WebApp: React.FC = () => {
                   <button className="kozein-save" onClick={() => toggleList(title)} aria-pressed={saved} aria-label={t(saved ? 'web.removeTitle' : 'web.saveTitle', { title: title.title })}>{saved ? <Check size={17} /> : <Plus size={17} />}</button>
                 </div>
                 <p className="text-xs text-text-muted">{title.year ?? t('web.unknownYear')}{title.episodes ? ` · ${t('web.episodes', { count: title.episodes })}` : ''}</p>
+                {stream && <Button size="sm" className="mt-2" aria-label={t('stream.playerLabel', { title: title.title })} onClick={() => watch(stream)}>
+                  <Play size={13} aria-hidden="true" />{t('stream.watch')}
+                </Button>}
               </article>;
             })}</div>
           ) : !error && <div className="kozein-empty"><Bookmark size={36} aria-hidden="true" /><h2>{t(tab === 'library' ? 'web.libraryEmpty' : 'web.noResults')}</h2><p>{t(tab === 'library' ? 'web.libraryEmptyHint' : 'web.noResultsHint')}</p>{tab === 'library' && <Button onClick={() => navigate('discover')}>{t('web.discover')}</Button>}</div>}
         </>}
         {tab === 'reading' && <Reading />}
-        {tab === 'video' && <LocalVideo />}
+        {tab === 'video' && <div className="flex flex-col gap-8"><WebStreaming initial={initialStream} /><LocalVideo /></div>}
         {tab === 'settings' && <div className="kozein-settings">
           <h1 className="text-2xl font-semibold">{t('web.settings')}</h1>
           <section><h2>{t('web.appearance')}</h2><div className="flex flex-wrap gap-2">{THEMES.map((item) => <Button key={item.id} variant={theme === item.id ? 'primary' : 'neutral'} aria-pressed={theme === item.id} onClick={() => { applyTheme(item.id); setTheme(item.id); }}>{'nameKey' in item ? t(item.nameKey) : item.name}</Button>)}</div></section>
@@ -219,7 +238,9 @@ export const WebApp: React.FC = () => {
         <div className="flex items-start gap-5"><img src={selected.cover} alt="" className="w-28 rounded-lg" /><div className="min-w-0"><p className="text-sm leading-relaxed text-text-secondary">{selected.genres.join(' · ')}</p><p className="mt-3 text-sm text-text-muted">{selected.score ? t('web.rating', { score: selected.score }) : t('web.unrated')}</p></div></div>
         <p className="max-h-60 overflow-y-auto whitespace-pre-line text-sm leading-relaxed text-text-secondary">{selected.description || t('web.noDescription')}</p>
         {(notice || storageError) && <p role={storageError ? 'alert' : 'status'} className="text-sm text-text-secondary">{storageError || notice}</p>}
+        {!selectedStream && <p className="text-sm text-text-muted">{t('stream.noSource')}</p>}
         <div className="flex flex-wrap gap-3">
+          {selectedStream && <Button variant="primary" onClick={() => watch(selectedStream)}><Play size={16} aria-hidden="true" />{t('stream.watch')}</Button>}
           <Button variant="primary" onClick={() => toggleList(selected)}>{selectedSaved ? <Check size={16} /> : <Plus size={16} />}{t(selectedSaved ? 'web.inLibrary' : 'web.addLibrary')}</Button>
           {safeCatalogueLink(selected.url) && <a href={safeCatalogueLink(selected.url) ?? undefined} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm text-accent-300">{t('web.officialPage')}<ExternalLink size={15} /></a>}
           <Button onClick={() => {
